@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>
+
+    <form method='post' action='/login'>
+	<input type='text' name='email' ><br>
+	<input type='password' name='pw' ><br>
+	<input type='submit' value='wow'>
+    </form>
+
+    <br>회원가입<br>
+    <form method='post' action='/join'>
+	email<input type='text' name='email' ><br>
+	pw<input type='password' name='pw' ><br>
+	nickname<input type='text' name='nick' ><br>
+	age<input type='text' name='age' ><br>
+	<input type='submit'>
+    </form>
+
+    <br>비번찾기<br>
+    <form method='post' action='/findpw'>
+	email<input type='text' name='email' ><br>
+	<input type='submit'>
+    </form>
+  </body>
+</html>
