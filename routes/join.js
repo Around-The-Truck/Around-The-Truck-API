@@ -130,6 +130,40 @@ exports.phoneOverlapCheck = function(req, res) {
 
 };
 
+var insertRow = function(client) {
+	if(email_result==0 && nick_result==0){
+		// db에 insert
+		client.query('INSERT INTO user (`email`, `pw`, `nick`, `age`, `reg_date`) VALUES (?, ?, ?, ?, NOW())',
+			[email, pw, nick, age],
+			function(error, result) {
+				// insert 실패
+				if(error) {
+					jsonStr = '{"code":102}';
+					res_global.end(jsonStr);
+				}
+				// insert 성공
+				else {
+					jsonStr = '{"code":101}';
+					res_global.end(jsonStr);
+				}
+		});
+	}
+	else{
+		if(email_result==0){
+			jsonStr = '{"code":104}';
+			res_global.end(jsonStr);
+		}
+		else{
+			jsonStr = '{"code":103}';
+			res_global.end(jsonStr);
+		}
+	}
+};
+
+/////////////////////////////////////////////////////////////////
+/// Below maybe not used....
+/////////////////////////////////////////////////////////////////
+
 exports.setComment = function(req, res) {
 	res.writeHead(200, {'Content-Type':'json;charset=utf-8'});
 	
@@ -183,34 +217,4 @@ var selectNick = function(client, nick) {
 			}
 
 	});
-};
-
-var insertRow = function(client) {
-	if(email_result==0 && nick_result==0){
-		// db에 insert
-		client.query('INSERT INTO user (`email`, `pw`, `nick`, `age`, `reg_date`) VALUES (?, ?, ?, ?, NOW())',
-			[email, pw, nick, age],
-			function(error, result) {
-				// insert 실패
-				if(error) {
-					jsonStr = '{"code":102}';
-					res_global.end(jsonStr);
-				}
-				// insert 성공
-				else {
-					jsonStr = '{"code":101}';
-					res_global.end(jsonStr);
-				}
-		});
-	}
-	else{
-		if(email_result==0){
-			jsonStr = '{"code":104}';
-			res_global.end(jsonStr);
-		}
-		else{
-			jsonStr = '{"code":103}';
-			res_global.end(jsonStr);
-		}
-	}
 };
