@@ -77,7 +77,7 @@ exports.join = function(req, res){
 					else {
 						console.log('Phone overlapped');
 					}
-					insertRow(client);
+					insertRow(client, res);
 				}
 		});
 	}
@@ -106,21 +106,21 @@ exports.phoneOverlapCheck = function(req, res) {
 				console.log('ErrMsg: '+ error);
 			}
 			else {
-				console.log('Email Overlap Test');
+				console.log('Phone Overlap Test');
 				console.log(JSON.stringify(result));
 				// 있는지 없는지 case dealing
 				console.log('result.length = '+result.length);
 
-				// email 중복 안 됨
+				// phone 중복 안 됨
 				if(result.length==0) {
-					console.log('Email not overlapped');
+					console.log('Phone not overlapped');
 					jsonStr = '{"code":105}';
 					res.end(jsonStr);
 
 				}
-				// email 중복됨
+				// phone 중복됨
 				else {
-					console.log('Email overlapped');
+					console.log('Phone overlapped');
 					jsonStr = '{"code":103}';
 					res.end(jsonStr);
 				}
@@ -130,33 +130,28 @@ exports.phoneOverlapCheck = function(req, res) {
 
 };
 
-var insertRow = function(client) {
-	if(email_result==0 && nick_result==0){
+var insertRow = function(client, res) {
+	if(phone_result==0){
 		// db에 insert
-		client.query('INSERT INTO user (`email`, `pw`, `nick`, `age`, `reg_date`) VALUES (?, ?, ?, ?, NOW())',
-			[email, pw, nick, age],
+		client.query('INSERT INTO customer (`name`, `phone`, `gender`, `age`, `reg_date`) VALUES (?, ?, ?, ?, NOW())',
+			[userName, phone, gender, age],
 			function(error, result) {
 				// insert 실패
 				if(error) {
 					jsonStr = '{"code":102}';
-					res_global.end(jsonStr);
+					res.end(jsonStr);
 				}
-				// insert 성공
+				// insert 성공	
 				else {
 					jsonStr = '{"code":101}';
-					res_global.end(jsonStr);
+					res.end(jsonStr);
 				}
 		});
 	}
+	// 이미 phone이 존재하는 경우 (error)
 	else{
-		if(email_result==0){
-			jsonStr = '{"code":104}';
-			res_global.end(jsonStr);
-		}
-		else{
-			jsonStr = '{"code":103}';
-			res_global.end(jsonStr);
-		}
+		jsonStr = '{"code":103}';
+		res_global.end(jsonStr);
 	}
 };
 

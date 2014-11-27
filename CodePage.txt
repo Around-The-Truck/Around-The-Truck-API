@@ -6,7 +6,7 @@
 join	1
 101	정상적으로 회원가입. (다시 로그인 화면으로..)
 102	insert 실패
-103	이미 존재하는 email
+103	이미 존재하는 phone
 104 	이미 존재하는 nick
 105	email Overlap test 통과
 106	nick Overlap test 통과
