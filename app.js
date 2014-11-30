@@ -4,15 +4,9 @@
 
 var express = require('express');
 var routes = require('./routes');
-//var routesLogin = require('./routes/login');
-//var routesFindpw = require('./routes/findpw');
 var routesJoin = require('./routes/join');
 var routesTruck = require('./routes/truck');
-//var routesCategory = require('./routes/category');
-//var routesMain = require('./routes/main');
-//var routesCharacter = require('./routes/character');
-//var routesProblemDictionary = require('./routes/problemdictionary');
-//var routesEtc = require('./routes/etc');
+
 var http = require('http');
 var path = require('path');
 
@@ -46,19 +40,10 @@ app.get('/', routes.index);
 
 
 app.get('/join', routesJoin.join);
-//app.get('/setComment', routesJoin.setComment);
 app.get('/phoneOverlapCheck', routesJoin.phoneOverlapCheck);
 // TODO: post 로 변경
 app.get('/getTruckList', routesTruck.getTruckList);
-//app.post('/login', routesLogin.login);
-//app.post('/findpw', routesFindpw.findpw);
-//app.post('/getCatList', routesCategory.getList);
-//app.post('/setCategory', routesCategory.setCategory);
-//app.post('/getMySession', routesCharacter.getSession);
-//app.post('/setCharacter', routesCharacter.setCharacter);
-//app.post('/getProblemDictionaryList', routesProblemDictionary.getProblemDictionaryList);
-//app.post('/getProblemDictionary', routesProblemDictionary.getProblemDictionary);
-//app.post('/makeReport', routesEtc.makeReport);
+
 
 var server = http.createServer(app).listen(app.get('port'), function() {
 	console.log("Express server listening on port " + app.get('port'));
@@ -74,6 +59,11 @@ var io = require('socket.io').listen(server);
 
 // log level 수정
 io.set('log level', 2);
+
+///////////////////////////////////////////////////////////
+//////////// 이 아래 안쓰일듯.. 왜냐면 복붙이기 때문이지! /////////////
+///////////// 2014.11.29 //////////////////////////////////
+///////////////////////////////////////////////////////////
 
 var CAT_K = 1000;
 var emailCheck = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

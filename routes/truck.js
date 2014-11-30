@@ -69,26 +69,39 @@ function returnTrucks (res, client) {
 	}
 	// gps정보가 넘어왔고,
 	else if(longitude != null && latitude != null) {
+		// 사용자로부터의 거리 계산
+		for(var i=0 ; i<tt.length ; i++) {
+			tt[i]['distFromUser'] = llDist(tt[i]['gps_latitude'], tt[i]['gps_longitude'], latitude, longitude);
+		}
+
 		// 2. 위치 검색을 한 경우
 			// address 에 contain 되는지 확인한 후 해당 트럭들을 return 한다.
 		if(addrStr != null) {
-
+			for(var i=0 ; i<tt.length ; i++) {
+				if(tt[i]['gps_address'].indexOf(addrStr) > -1)	retVal.push(tt[i]);
+			}
+			for(var i=0 ; i<retVal.length ; i++) {
+				retVal.sort(function(a,b){return a['distFromUser']-b['distFromUser']});
+			}
 		}
 		// 3. gps 정보만 받은 경우
 			// req로 넘겨받은 사용자의 위치를 계산한다.
 		else {
-
+			tt.sort(function(a,b){return a['distFromUser']-b['distFromUser']});
 		}
 	}
 	// gps정보가 없는 경우,
 	else {
 		// 4. gps 없이 위치만 받은 경우
 		if(addrStr != null) {
-
+			for(var i=0 ; i<tt.length ; i++) {
+				if(tt[i]['gps_address'].indexOf(addrStr) > -1)	retVal.push(tt[i]);
+			}
 		}
 		// 5. error!
 		else {
 			res.end('["code":202]');
+			return;
 		}
 	}
 	jsonStr = '["code":200,"result":'+JSON.stringify(retVal)+']';
