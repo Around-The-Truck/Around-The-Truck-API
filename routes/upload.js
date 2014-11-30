@@ -1,22 +1,20 @@
 var fs = require('fs');
-var im = require('imagemagick');
 
-exports.upload = function(req, res){
-	console.log("Received file:\n" + JSON.stringify(req.files));
 
-	console.log(req.files.image.originalFilename);
- 	console.log(req.files.image.path);
+exports.upload = function(req, res) {
+    fs.readFile(req.files.file.path, function (err, data) {
+        var fileName = req.files.file.name;
 
-    fs.readFile(req.files.image.path, function (err, data){
-    	var dirname = "/home/jason";
-    	var newPath = dirname + "/uploads/" +   req.files.image.originalFilename;
+        if(!fileName){
+            res.end("no..");
+        }
+        else {
+            var Path = __dirname + "/../upload/" + fileName;
 
-    	fs.writeFile(newPath, data, function (err) {
-	    	if(err){
-	    		res.json({'response':"Error"});
-			}else {
-	    		res.json({'response':"Saved"});
-			}
-		});
+            fs.writeFile(Path, data, function (err) {
+                res.writeHead(200, {'Content-Type': 'text/html' });
+                res.end('Upload success');
+            });
+        }
     });
 };
