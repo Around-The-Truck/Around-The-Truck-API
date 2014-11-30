@@ -6,7 +6,7 @@ var express = require('express');
 var routes = require('./routes');
 var routesJoin = require('./routes/join');
 var routesTruck = require('./routes/truck');
-
+var routesUpload = require('./routes/upload');
 var http = require('http');
 var path = require('path');
 
@@ -44,6 +44,7 @@ app.get('/phoneOverlapCheck', routesJoin.phoneOverlapCheck);
 // TODO: post 로 변경
 app.get('/getTruckList', routesTruck.getTruckList);
 app.get('/getTruckInfo', routesTruck.getTruckInfo);
+app.post('/upload', routesUpload.upload);
 
 
 var server = http.createServer(app).listen(app.get('port'), function() {
