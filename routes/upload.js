@@ -15,5 +15,5 @@ exports.upload = function(req, res){
     		res.json({'response':"Error"});
     }else {
     	res.json({'response':"Saved"});
-	}*/
+	}
 };
