@@ -114,14 +114,14 @@ exports.phoneOverlapCheck = function(req, res) {
 				// phone 중복 안 됨
 				if(result.length==0) {
 					console.log('Phone not overlapped');
-					jsonStr = '{"code":105}';
+					jsonStr = '["code":105]';
 					res.end(jsonStr);
 
 				}
 				// phone 중복됨
 				else {
 					console.log('Phone overlapped');
-					jsonStr = '{"code":103}';
+					jsonStr = '["code":103]';
 					res.end(jsonStr);
 				}
 			}
@@ -138,19 +138,19 @@ var insertRow = function(client, res) {
 			function(error, result) {
 				// insert 실패
 				if(error) {
-					jsonStr = '{"code":102}';
+					jsonStr = '["code":102]';
 					res.end(jsonStr);
 				}
 				// insert 성공	
 				else {
-					jsonStr = '{"code":101}';
+					jsonStr = '["code":101]';
 					res.end(jsonStr);
 				}
 		});
 	}
 	// 이미 phone이 존재하는 경우 (error)
 	else{
-		jsonStr = '{"code":103}';
+		jsonStr = '["code":103]';
 		res_global.end(jsonStr);
 	}
 };

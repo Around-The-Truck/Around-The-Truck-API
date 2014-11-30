@@ -41,23 +41,24 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 
 // 메인 페이지에서 나의 정보가져오기
-app.get('/getMyProfile', routesMain.getMyProfile);
-app.get('/logout', routesMain.logoutRequest);
+//app.get('/getMyProfile', routesMain.getMyProfile);
+//app.get('/logout', routesMain.logoutRequest);
 
 
 app.get('/join', routesJoin.join);
-app.gett('/setComment', routesJoin.setComment);
+//app.get('/setComment', routesJoin.setComment);
 app.get('/phoneOverlapCheck', routesJoin.phoneOverlapCheck);
-
-app.post('/login', routesLogin.login);
-app.post('/findpw', routesFindpw.findpw);
-app.post('/getCatList', routesCategory.getList);
-app.post('/setCategory', routesCategory.setCategory);
-app.post('/getMySession', routesCharacter.getSession);
-app.post('/setCharacter', routesCharacter.setCharacter);
-app.post('/getProblemDictionaryList', routesProblemDictionary.getProblemDictionaryList);
-app.post('/getProblemDictionary', routesProblemDictionary.getProblemDictionary);
-app.post('/makeReport', routesEtc.makeReport);
+// TODO: post 로 변경
+app.get('/getTruckList', routesTruck.getTruckList);
+//app.post('/login', routesLogin.login);
+//app.post('/findpw', routesFindpw.findpw);
+//app.post('/getCatList', routesCategory.getList);
+//app.post('/setCategory', routesCategory.setCategory);
+//app.post('/getMySession', routesCharacter.getSession);
+//app.post('/setCharacter', routesCharacter.setCharacter);
+//app.post('/getProblemDictionaryList', routesProblemDictionary.getProblemDictionaryList);
+//app.post('/getProblemDictionary', routesProblemDictionary.getProblemDictionary);
+//app.post('/makeReport', routesEtc.makeReport);
 
 var server = http.createServer(app).listen(app.get('port'), function() {
 	console.log("Express server listening on port " + app.get('port'));
@@ -79,21 +80,6 @@ var emailCheck = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\")
 var users = {};
 // { email : { profile : {data} , socket_id : 'socket.id', talkWith : 'email'  }} 의 형식
 var SocketToEmail = {};
-
-var llDist = function(lat1, lon1, lat2, lon2){
-	//lat1, lon1은 각각 1번 점의 위도 경도 lat2, lon2는 각각 2번 점의 위도 경도
-	//위도 경도를 입력 받아 두 점 사이의 거리를 계산해준다
-	if(lat1 == lat2 && lon1 == lon2) return 0;
-	var theta, dist;
-	theta = lon1 - lon2;
-	
-	dist = Math.sin(lat1 * Math.PI / 180.0) * Math.sin(lat2 * Math.PI / 180.0);
-	dist += Math.cos(lat1 * Math.PI / 180.0) * Math.cos(lat2 * Math.PI / 180.0) * Math.cos(theta * Math.PI / 180.0);
-	dist = Math.acos(dist);
-	dist = dist * 180.0 / Math.PI;
-	dist = dist * 60.0 * 1.1515 * 1609.344;
-	return dist;
-}
 
 var catDif = function(cat1, cat2){
 	// 아니 왜 cat1이랑 cat2에 undefined가 들어와 이 나쁜 놈들아
