@@ -10,10 +10,13 @@ exports.upload = function(req, res){
     fs.readFile(req.files.image.path, function (err, data){
     	var dirname = "/home/jason";
     	var newPath = dirname + "/uploads/" +   req.files.image.originalFilename;
+
     	fs.writeFile(newPath, data, function (err) {
-    	if(err){
-    		res.json({'response':"Error"});
-    }else {
-    	res.json({'response':"Saved"});
-	}
+	    	if(err){
+	    		res.json({'response':"Error"});
+			}else {
+	    		res.json({'response':"Saved"});
+			}
+		});
+    });
 };
