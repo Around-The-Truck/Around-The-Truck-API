@@ -44,7 +44,44 @@ app.get('/phoneOverlapCheck', routesJoin.phoneOverlapCheck);
 // TODO: post 로 변경
 app.get('/getTruckList', routesTruck.getTruckList);
 app.get('/getTruckInfo', routesTruck.getTruckInfo);
-app.post('/upload', routesUpload.upload);
+//app.post('/upload', routesUpload.upload);
+app.post('/upload', function(req, res){
+	console.log("Received file:\n" + JSON.stringify(req.files));
+	return;
+	
+	var photoDir = __dirname+"/photos/";
+	var thumbnailsDir = __dirname+"/photos/thumbnails/";
+	var photoName = req.files.source.name;
+
+	fs.rename(
+		req.files.source.path,
+		photoDir+photoName,
+		function(err){
+			if(err != null){
+				console.log(err)
+				res.send({error:"Server Writting No Good"});
+			} else {
+				im.resize(
+					{
+						srcData:fs.readFileSync(photoDir+photoName, 'binary'),
+						width:256
+					}, 
+					function(err, stdout, stderr){
+						if(err != null){
+							console.log('stdout : '+stdout)
+							
+							res.send({error:"Resizeing No Good"});
+						} else {
+							//console.log('ELSE stdout : '+stdout)
+							fs.writeFileSync(thumbnailsDir+"thumb_"+photoName, stdout, 'binary');
+							res.send("Ok");
+						}
+					}
+				);
+			}
+		}
+	);
+});
 
 
 var server = http.createServer(app).listen(app.get('port'), function() {

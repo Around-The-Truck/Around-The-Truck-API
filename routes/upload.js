@@ -6,10 +6,9 @@ exports.upload = function(req, res){
 
 	console.log(req.files.image.originalFilename);
  	console.log(req.files.image.path);
- 	return;
- 	/*
+
     fs.readFile(req.files.image.path, function (err, data){
-    	var dirname = "/home/rajamalw/Node/file-upload";
+    	var dirname = "/home/jason";
     	var newPath = dirname + "/uploads/" +   req.files.image.originalFilename;
     	fs.writeFile(newPath, data, function (err) {
     	if(err){
