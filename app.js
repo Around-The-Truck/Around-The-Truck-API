@@ -4,14 +4,15 @@
 
 var express = require('express');
 var routes = require('./routes');
-var routesLogin = require('./routes/login');
-var routesFindpw = require('./routes/findpw');
+//var routesLogin = require('./routes/login');
+//var routesFindpw = require('./routes/findpw');
 var routesJoin = require('./routes/join');
-var routesCategory = require('./routes/category');
-var routesMain = require('./routes/main');
-var routesCharacter = require('./routes/character');
-var routesProblemDictionary = require('./routes/problemdictionary');
-var routesEtc = require('./routes/etc');
+var routesTruck = require('./routes/truck');
+//var routesCategory = require('./routes/category');
+//var routesMain = require('./routes/main');
+//var routesCharacter = require('./routes/character');
+//var routesProblemDictionary = require('./routes/problemdictionary');
+//var routesEtc = require('./routes/etc');
 var http = require('http');
 var path = require('path');
 
@@ -43,11 +44,13 @@ app.get('/', routes.index);
 app.get('/getMyProfile', routesMain.getMyProfile);
 app.get('/logout', routesMain.logoutRequest);
 
+
+app.get('/join', routesJoin.join);
+app.gett('/setComment', routesJoin.setComment);
+app.get('/phoneOverlapCheck', routesJoin.phoneOverlapCheck);
+
 app.post('/login', routesLogin.login);
 app.post('/findpw', routesFindpw.findpw);
-app.post('/join', routesJoin.join);
-app.post('/setComment', routesJoin.setComment);
-app.post('/phoneOverlapCheck', routesJoin.phoneOverlapCheck);
 app.post('/getCatList', routesCategory.getList);
 app.post('/setCategory', routesCategory.setCategory);
 app.post('/getMySession', routesCharacter.getSession);
