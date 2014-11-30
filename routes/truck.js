@@ -48,10 +48,6 @@ exports.getTruckList = function(req, res){
 			}
 		}
 	);
-	
-	
-
-	
 };
 
 function returnTrucks (res, client) {
@@ -122,3 +118,45 @@ function llDist(lat1, lon1, lat2, lon2) {
 	dist = dist * 60.0 * 1.1515 * 1609.344;
 	return dist;
 }
+
+exports.getTruckInfo = function(req, res){
+	res.writeHead(200, {'Content-Type': 'application/json;charset=utf-8'});
+
+	// mysql 접속
+	var client = mysql.createConnection({
+		host: '165.194.35.161',
+		user: 'food',
+		password: 'truck'
+	});
+
+	// json 으로 온 데이터를 파싱.
+	// post 로 변경될 때 여기 body 로 변경할 것!
+	truckIdx = req.query.truckIdx;
+
+	if(truckIdx==null) {
+		jsonStr = '["code":203]';
+		res.end(jsonStr);
+		return;
+	}
+
+	client.query('use aroundthetruck');
+	client.query('select * from truck where idx='+truckIdx,
+		function(error, result, fields) {
+			if(error) {
+				console.log('there\'s error in query!!');
+				console.log(error);
+			}
+			else {
+				var jsonStr = '';
+				if(result.length==0) {
+					jsonStr = '["code":204]';
+					res.end(jsonStr);
+				}
+				else {
+					jsonStr = '["code":200,"result":'+JSON.stringify(result)+']';
+					res.end(jsonStr);
+				}
+			}
+		}
+	);
+};

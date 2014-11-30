@@ -43,6 +43,7 @@ app.get('/join', routesJoin.join);
 app.get('/phoneOverlapCheck', routesJoin.phoneOverlapCheck);
 // TODO: post 로 변경
 app.get('/getTruckList', routesTruck.getTruckList);
+app.get('/getTruckInfo', routesTruck.getTruckInfo);
 
 
 var server = http.createServer(app).listen(app.get('port'), function() {
