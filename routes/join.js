@@ -114,20 +114,18 @@ exports.phoneOverlapCheck = function(req, res) {
 				// phone 중복 안 됨
 				if(result.length==0) {
 					console.log('Phone not overlapped');
-					jsonStr = '["code":105]';
+					jsonStr = '{"code":105}';
 					res.end(jsonStr);
 
 				}
 				// phone 중복됨
 				else {
 					console.log('Phone overlapped');
-					jsonStr = '["code":103]';
+					jsonStr = '{"code":103}';
 					res.end(jsonStr);
 				}
 			}
 	});
-
-
 };
 
 var insertRow = function(client, res) {
@@ -138,78 +136,62 @@ var insertRow = function(client, res) {
 			function(error, result) {
 				// insert 실패
 				if(error) {
-					jsonStr = '["code":102]';
+					jsonStr = '{"code":102}';
 					res.end(jsonStr);
 				}
 				// insert 성공	
 				else {
-					jsonStr = '["code":101]';
+					jsonStr = '{"code":101}';
 					res.end(jsonStr);
 				}
 		});
 	}
 	// 이미 phone이 존재하는 경우 (error)
 	else{
-		jsonStr = '["code":103]';
+		jsonStr = '{"code":103}';
 		res_global.end(jsonStr);
 	}
 };
 
-/////////////////////////////////////////////////////////////////
-/// Below maybe not used....
-/////////////////////////////////////////////////////////////////
+exports.truckNumCheck = function(req, res) {
+	res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
+	//phone = req.body.phone;
+	num = req.param('num');
 
-exports.setComment = function(req, res) {
-	res.writeHead(200, {'Content-Type':'json;charset=utf-8'});
-	
-	var comment = req.body.comment;
-	// mysql 접속
+	// valid numeric check
+	if(num==null || isNaN(parseInt(num))  || !isFinite(num)) {
+		res.end('{"code":107}');
+		return ;
+	}
+
+
+
+	// mysql 에서 찾기
 	var client = mysql.createConnection({
-		host: 'localhost',
-		user: 'sgenuser',
-		password: 'sgen123'
+		host: g_host,
+		user: g_user,
+		password: g_pw
 	});
 
-	client.query('use sgen');
-	client.query('UPDATE user SET `comment`=? WHERE `email`=?',
-		[comment, req.session.email],
-		function(error, result) {
-			if(error) {
-				console.log("in setComment ************************");
-				res.end('{"code":702}');
-			}
-			else {
-				req.session.comment = comment;
-				res.end('{"code":701}');
-			}
-	});
-};
-
-var selectNick = function(client, nick) {
-	client.query('select * from user where nick=?',
-		[nick],
+	// db 접속
+	client.query('use aroundthetruck');
+	client.query('set names utf8');
+	client.query('select * from truck where idx=?',
+		[num],
 		function(error, result, fields) {
 			if(error) {
-				console.log('there\'s error in query!!');
-				console.log('ErrMsg: '+ error);
+				res.end('{"code":108}');
 			}
-
 			else {
-				console.log('Nick Overlap Test');
-				console.log(JSON.stringify(result));
-				// 있는지 없는지 case dealing
-				console.log('result.length = '+result.length);
-				nick_result = result.length;
-				// nick 중복 안 됨
 				if(result.length==0) {
-					console.log('Nick not overlapped');
+					res.end('{"code":109}');
 				}
-				// nick 중복됨
+				else if(result.length==1) {
+					res.end('{"code":110}');
+				}
 				else {
-					console.log('Nick overlapped');	
+					res.end('{"code":111}');
 				}
-				insertRow(client);
 			}
-
 	});
 };

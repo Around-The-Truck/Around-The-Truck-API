@@ -39,13 +39,21 @@ app.get('/', routes.index);
 //app.get('/getMyProfile', routesMain.getMyProfile);
 //app.get('/logout', routesMain.logoutRequest);
 
-
+// 손님 회원가입
 app.get('/join', routesJoin.join);
 app.get('/phoneOverlapCheck', routesJoin.phoneOverlapCheck);
-// TODO: post 로 변경
+// 트럭 리스트 불러오기
 app.get('/getTruckList', routesTruck.getTruckList);
+// 한개 트럭 정보 불러오기
 app.get('/getTruckInfo', routesTruck.getTruckInfo);
+// 장사 시작
+app.get('/truckStart', routesTruck.truckStart);
+// 장사 끝
+app.get('/truckEnd', routesTruck.truckEnd);
+// 파일 업로드 (테스트)
 app.post('/upload', routesUpload.upload);
+// 유효한 고유번호인지 확인
+app.get('/truckNumCheck', routesJoin.truckNumCheck);
 
 
 var server = http.createServer(app).listen(app.get('port'), function() {

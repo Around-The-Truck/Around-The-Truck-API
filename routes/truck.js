@@ -37,7 +37,7 @@ exports.getTruckList = function(req, res){
 			else {
 				var jsonStr = '';
 				if(result.length==0) {
-					jsonStr = '["code":201]';
+					jsonStr = '{"code":201}';
 					res.end(jsonStr);
 				}
 				else {
@@ -96,11 +96,11 @@ function returnTrucks (res, client) {
 		}
 		// 5. error!
 		else {
-			res.end('["code":202]');
+			res.end('{"code":202}');
 			return;
 		}
 	}
-	jsonStr = '["code":200,"result":'+JSON.stringify(retVal)+']';
+	jsonStr = '{"code":200,"result":'+JSON.stringify(retVal)+'}';
 	res.end(jsonStr);
 }
 
@@ -134,7 +134,7 @@ exports.getTruckInfo = function(req, res){
 	truckIdx = req.query.truckIdx;
 
 	if(truckIdx==null) {
-		jsonStr = '["code":203]';
+		jsonStr = '{"code":203}';
 		res.end(jsonStr);
 		return;
 	}
@@ -149,14 +149,82 @@ exports.getTruckInfo = function(req, res){
 			else {
 				var jsonStr = '';
 				if(result.length==0) {
-					jsonStr = '["code":204]';
+					jsonStr = '{"code":204}';
 					res.end(jsonStr);
 				}
 				else {
-					jsonStr = '["code":200,"result":'+JSON.stringify(result)+']';
+					jsonStr = '{"code":200,"result":'+JSON.stringify(result)+'}';
 					res.end(jsonStr);
 				}
 			}
 		}
 	);
+};
+
+exports.truckStart = function(req, res) {
+	res.writeHead(200, {'Content-Type':'json;charset=utf-8'});
+	
+	var truckIdx = req.param('idx');
+	// mysql 접속
+	var client = mysql.createConnection({
+		host: '165.194.35.161',
+		user: 'food',
+		password: 'truck'
+	});
+
+	client.query('use aroundthetruck');
+	//TODO
+	client.query('UPDATE truck SET `start_yn`=1, start_time=NOW() WHERE `idx`=?',
+		[truckIdx],
+		function(error, result) {
+			if(error) {
+				res.end('{"code":204}');
+			}
+			else {
+				res.end('{"code":205}');
+			}
+	});
+};
+
+exports.truckEnd = function(req, res) {
+	res.writeHead(200, {'Content-Type':'json;charset=utf-8'});
+	
+	var truckIdx = req.param('idx');
+	// mysql 접속
+	var client = mysql.createConnection({
+		host: '165.194.35.161',
+		user: 'food',
+		password: 'truck'
+	});
+
+	client.query('use aroundthetruck');
+	//TODO
+	client.query('UPDATE truck SET `start_yn`=0 WHERE `idx`=?',
+		[truckIdx],
+		function(error, result) {
+			if(error) {
+				res.end('{"code":206}');
+			}
+			else {
+				//res.end('{"code":205}');
+				insertOpenHistory(client, res, truckIdx);
+			}
+	});
+};
+
+var insertOpenHistory = function(client, res, idx) {
+	client.query('insert into open_history (truckIdx, start, end) values ('+idx+', (select start_time from truck where idx='+idx+'), NOW())',
+		[idx],
+		function(error, result) {
+			// insert 실패
+			if(error) {
+				jsonStr = '{"code":207}';
+				res.end(jsonStr);
+			}
+			// insert 성공	
+			else {
+				jsonStr = '{"code":208}';
+				res.end(jsonStr);
+			}
+	});
 };
