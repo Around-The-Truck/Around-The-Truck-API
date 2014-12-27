@@ -54,7 +54,8 @@ app.get('/truckEnd', routesTruck.truckEnd);
 app.post('/upload', routesUpload.upload);
 // 유효한 고유번호인지 확인
 app.get('/truckNumCheck', routesJoin.truckNumCheck);
-
+// 트럭 회원가입
+app.post('/truckJoin', routesJoin.truckJoin);
 
 var server = http.createServer(app).listen(app.get('port'), function() {
 	console.log("Express server listening on port " + app.get('port'));
