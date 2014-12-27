@@ -43,11 +43,11 @@ exports.join = function(req, res){
 	try
 	{
 		// json 으로 온 데이터를 파싱.
-		userName = req.body.userName;
-		age = req.body.age;
-		gender = req.body.gender;
-		job = req.body.job;
-		phone = req.body.phone;
+		userName = req.param('userName');
+		age = req.param('age');
+		gender = req.param('gender');
+		job = req.param('job');
+		phone = req.param('phone');
 		
 		console.log("input userName: "+userName);
 		console.log("input age: "+age);
