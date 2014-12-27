@@ -65,19 +65,19 @@ Around-The-Truck-API
 
 | params    | 설명            | 예시 | type |
 | -------   | --------------- | -- | -- |
-| idx | 트럭고유번호 | | |
-| truckName | 트럭 이름 | | |
-| phone | 전화번호 | | |
+| idx | 트럭고유번호 |  |  |
+| truckName | 트럭 이름 |  |  |
+| phone | 전화번호 |  |  |
 | open_date | 오픈 일자 | 2014-12-25 12:00:00 | string |
-| file | 프로필 사진 | | |
-| category_big | 대분류 | | int |
-| category_small | 소분류 | | int |
-| takeout_yn | 테이크아웃 가능여부 | | 0,1 |
-| cansit_yn | 착석 가능여부 | | 0,1 |
-| card_yn | 카드결제 가능여부 | | 0,1 |
-| reserve_yn | 예약 가능여부 | | 0,1 |
-| group_order_yn | 단체주문 가능여부 | | 0,1 |
-| always_open_yn | 연중무휴 가능여부 | | 0,1 |
+| file | 프로필 사진 |  |  |
+| category_big | 대분류 |  | int |
+| category_small | 소분류 |  | int |
+| takeout_yn | 테이크아웃 가능여부 |  | 0,1 |
+| cansit_yn | 착석 가능여부 |  | 0,1 |
+| card_yn | 카드결제 가능여부 |  | 0,1 |
+| reserve_yn | 예약 가능여부 |  | 0,1 |
+| group_order_yn | 단체주문 가능여부 |  | 0,1 |
+| always_open_yn | 연중무휴 가능여부 |  | 0,1 |
 
 * json 으로 리턴합니다. (너무 많네요..) [CodePage.txt](CodePage.txt)
 
