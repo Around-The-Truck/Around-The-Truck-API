@@ -28,6 +28,7 @@ Around-The-Truck-API
 * 한 개의 푸드트럭 정보만 받아옵니다.
     * GET http://165.194.35.161:3000/getTruckInfo
 * params 
+
 | params    | 설명            |
 | -------   | --------------- |
 | truckIdx | 트럭의 idx 넘버 |
@@ -42,11 +43,13 @@ Around-The-Truck-API
 * 사전에 받은 고유번호가 맞는지 확인해 줍니다.
     * GET http://165.194.35.161:3000/truckNumCheck
 * params 
+
 | params    | 설명            |
 | -------   | --------------- |
 | num | 트럭의 idx 넘버 |
 
 * json 으로 리턴합니다. 주요 코드는 아래와 같습니다. (CodePage.txt에 다 있음)
+
 | code    | 설명            |
 | -------   | --------------- |
 | 108 | 트럭고유번호 조회 실패 |
@@ -59,6 +62,7 @@ Around-The-Truck-API
 * multipart 로 쏴주세요!
  * POST http://165.194.35.161:3000/truckJoin
 * params 
+
 | params    | 설명            | 예시 | type |
 | -------   | --------------- | -- | -- |
 | idx | 트럭고유번호 | | |
@@ -81,6 +85,7 @@ Around-The-Truck-API
 * 장사 시작입니다. 3번 트럭의 경우, 
   * GET http://165.194.35.161:3000/truckStart?idx=3
 * json 으로 리턴합니다. 주요 코드는 다음과 같습니다. 
+
 | code    | 설명            |
 | -------   | --------------- |
 | 204 | 트럭 start 오류 |
@@ -90,6 +95,7 @@ Around-The-Truck-API
 * 장사 끝 입니다. 3번 트럭의 경우, 
   * GET http://165.194.35.161:3000/truckEnd?idx=3
 * json 으로 리턴합니다. 주요 코드는 다음과 같습니다. 
+
 | code    | 설명            |
 | -------   | --------------- |
 | 206 | 트럭 end 오류 (truck.start_yn) |
@@ -100,6 +106,7 @@ Around-The-Truck-API
 * 손님 회원가입입니다. 
   * GET http://165.194.35.161:3000/join
 * params
+
 | params    | 설명            | 예시 |
 | -------   | --------------- | |
 | userName | 사용자 이름 | |
