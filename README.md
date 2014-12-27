@@ -1,24 +1,33 @@
 Around-The-Truck-API
 ====================
 
-## Æ®·°¸®½ºÆ® ºÒ·¯¿À±â
- * ÀÏ´Ü getÀ¸·Î ÇØ³ù½À´Ï´Ù. (ÃßÈÄ¿¡ ¹Ù²Ü²¨ÀÓ)
- * http://165.194.35.161:3000/getTruckList
- * json À¸·Î ¸®ÅÏÇÕ´Ï´Ù.
- * ex) ["code":200,"result":[{"idx":2,"name":"ÈñÁ¤ÀÌÀÇÆ¯Á¦ÄÉ¹äÆ®·°","gps_longitude":126.9876808,"gps_latitude":37.4292171,"gps_altitude":30.94,"gps_address":"°æ±âµµ °úÃµ½Ã Áß¾Óµ¿ 1-3","todays_sum":null,"start_yn":null,"follow_count":null,"photo_id":null,"takeout_yn":null,"main_position":null,"category_id":null}]]
+### í‘¸ë“œíŠ¸ëŸ­ ë¦¬ìŠ¤íŠ¸ ë¶ˆëŸ¬ì˜¤ê¸°
+* í‘¸ë“œíŠ¸ëŸ­ì˜ ë¦¬ìŠ¤íŠ¸ë¥¼ ë°›ì•„ì˜µë‹ˆë‹¤.
+    * GET http://165.194.35.161:3000/getTruckList
+* params
+| params    | ì„¤ëª…            |
+| -------   | --------------- |
+| truckName | íŠ¸ëŸ­ ì´ë¦„ìœ¼ë¡œ ê²€ìƒ‰í•  ë•Œ          |
+| [latitude]  | ìœ„ë„ |
+| [longitude] | ê²½ë„    |
+| addrStr   | ì„œìš¸, ê²½ê¸° ì´ëŸ° ì‹ìœ¼ë¡œ ì£¼ì†Œ ê²€ìƒ‰í•  ë•Œ |
+* json ìœ¼ë¡œ ë¦¬í„´í•©ë‹ˆë‹¤. ex)
 
-### params
- * truckName : Æ®·° ÀÌ¸§À¸·Î °Ë»öÇÒ ¶§
- * latitude : À§µµ
- * longitude : °æµµ
- * addrStr : ¼­¿ï, °æ±â ÀÌ·± ½ÄÀ¸·Î ÁÖ¼Ò °Ë»öÇÒ ¶§
+{"code":200,"result":[{"idx":2,"name":"í¬ì •ì´ì˜íŠ¹ì œì¼€ë°¥íŠ¸ëŸ­","gps_longitude":126.9876808,"gps_latitude":37.4292171,"gps_altitude":30.94,"gps_address":"ê²½ê¸°ë„ ê³¼ì²œì‹œ ì¤‘ì•™ë™ 1-3","todays_sum":null,"start_yn":null,"follow_count":null,"photo_id":null,"takeout_yn":null,"main_position":null,"category_id":null}]}
 
- * ÀÌ¸§À¸·Î °Ë»öÇÒ ¶§´Â gps Á¤º¸¸¦ µûÁöÁö ¾Ê½À´Ï´Ù. (´ç¿¬ÇÑ°¡¿ä?)
- * °¢ »óÈ² º° ¿¡·¯ ÄÚµå¸¦ °°ÀÌ json À¸·Î ¸®ÅÏÇÕ´Ï´Ù. CodePage.txt ¸¦ Âü°íÇØÁÖ¼¼¿ä!
+* gps ì •ë³´ëŠ” ì˜µì…˜ì…ë‹ˆë‹¤.
+    * ë„˜ì–´ì™”ì„ ê²½ìš°, ê°€ê¹Œìš´ ìˆœìœ¼ë¡œ ì •ë ¬í•´ì„œ ë³´ë‚´ì¤ë‹ˆë‹¤.
+* ì´ë¦„ìœ¼ë¡œ ê²€ìƒ‰í•  ë•ŒëŠ” gps ì •ë³´ê°€ ë„˜ì–´ì™”ë“  ì•„ë‹ˆë“  ìƒê´€ ì•ˆí•©ë‹ˆë‹¤. (ë‹¹ì—°í•œê°€ìš”?)
+* ê° ìƒí™© ë³„ ì—ëŸ¬ ì½”ë“œë¥¼ ê°™ì´ json ìœ¼ë¡œ ë¦¬í„´í•©ë‹ˆë‹¤. CodePage.txt ë¥¼ ì°¸ê³ í•´ì£¼ì„¸ìš”!
 
-## ÇÑ°³ Æ®·° Á¤º¸ ºÒ·¯¿À±â
- * http://165.194.35.161:3000/getTruckInfo
- * json ¸®ÅÏ.
+### í•œê°œ íŠ¸ëŸ­ ì •ë³´ ë¶ˆëŸ¬ì˜¤ê¸°
+* í•œ ê°œì˜ í‘¸ë“œíŠ¸ëŸ­ ì •ë³´ë§Œ ë°›ì•„ì˜µë‹ˆë‹¤.
+    * GET http://165.194.35.161:3000/getTruckInfo
+* params
+| params    | ì„¤ëª…            |
+| -------   | --------------- |
+| truckIdx | íŠ¸ëŸ­ì˜ idx ë„˜ë²„ |
+ * json ìœ¼ë¡œ ë¦¬í„´í•©ë‹ˆë‹¤.
 
-### params
- * truckIdx : Æ®·°ÀÇ ÀÎµ¦½º ³Ñ¹ö
+ {"code":200,"result":[{"idx":1,"name":"ë§›ìˆëŠ”ìƒˆìš°íŠ¸ëŸ­","phone_num":null,"gps_longitude":126.980444,"gps_latitude":37.494529,"gps_altitude":30.94,"gps_address":"í•œêµ­ ì„œìš¸íŠ¹ë³„ì‹œ ë™ì‘êµ¬ ë™ì‘ë™ 63-22","todays_sum":null,"start_yn":1,"start_time":"2014-12-20T11:14:40.000Z","follow_count":null,"photo_id":null,"main_position":null,"category_id":null,"category_small":null,"takeout_yn":null,"cansit_yn":null,"card_yn":null,"reserve_yn":null,"group_order_yn":null,"always_open_yn":null,"reg_date":null,"open_date":null}]}
+
