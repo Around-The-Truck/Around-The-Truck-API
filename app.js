@@ -7,6 +7,7 @@ var routes = require('./routes');
 var routesJoin = require('./routes/join');
 var routesTruck = require('./routes/truck');
 var routesUpload = require('./routes/upload');
+var routesArticle = require('./routes/article');
 var http = require('http');
 var path = require('path');
 
@@ -56,6 +57,10 @@ app.post('/upload', routesUpload.upload);
 app.get('/truckNumCheck', routesJoin.truckNumCheck);
 // 트럭 회원가입
 app.post('/truckJoin', routesJoin.truckJoin);
+// 한 개의 article 을 받아온다. (by idx)
+app.get('/getArticle', routesArticle.getArticle);
+// article 들을 받아온다. (by writer)
+app.get('/getArticleList', routesArticle.getArticleList);
 
 var server = http.createServer(app).listen(app.get('port'), function() {
 	console.log("Express server listening on port " + app.get('port'));
