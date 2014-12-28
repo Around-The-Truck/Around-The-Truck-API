@@ -42,6 +42,7 @@ exports.getTruckList = function(req, res){
 				}
 				else {
 					// 모든 트럭 정보 전역변수에 저장
+					result = UTCtoLocal(result);
 					trucks = JSON.stringify(result);
 					returnTrucks(res, client);
 				}
@@ -153,6 +154,7 @@ exports.getTruckInfo = function(req, res){
 					res.end(jsonStr);
 				}
 				else {
+					result = UTCtoLocal(result);
 					jsonStr = '{"code":200,"result":'+JSON.stringify(result)+'}';
 					res.end(jsonStr);
 				}
@@ -228,3 +230,20 @@ var insertOpenHistory = function(client, res, idx) {
 			}
 	});
 };
+
+function UTCtoLocal(str) {
+	for(var i=0 ; i<str.length ; i++) {
+		var res = "";
+		var d = new Date(str[i]['reg_date']);
+
+		res += d.getFullYear()+"-";
+		res += (((d.getMonth()+1)<10)?"0"+(d.getMonth()+1):(d.getMonth()+1))+"-";
+		res += (((d.getDate())<10)?"0"+(d.getDate()):(d.getDate()))+" ";
+		res += (((d.getHours())<10)?"0"+(d.getHours()):(d.getHours()))+":";
+		res += (((d.getMinutes())<10)?"0"+(d.getMinutes()):(d.getMinutes()))+":";
+		res += (((d.getSeconds())<10)?"0"+(d.getSeconds()):(d.getSeconds()))+"";	
+
+		str[i]['reg_date'] = res;
+	}
+	return str;
+}
