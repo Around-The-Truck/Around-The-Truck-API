@@ -8,10 +8,10 @@ Around-The-Truck-API
 
 | params    | 설명            |
 | -------   | --------------- |
-| truckName | 트럭 이름으로 검색할 때          |
+| [truckName] | 트럭 이름으로 검색할 때          |
 | [latitude]  | 위도 |
 | [longitude] | 경도    |
-| addrStr   | 서울, 경기 이런 식으로 주소 검색할 때 |
+| [addrStr]   | 서울, 경기 이런 식으로 주소 검색할 때 |
 * json 으로 리턴합니다. ex)
 
 ```
@@ -19,8 +19,13 @@ Around-The-Truck-API
    "result":[{"idx":2,"name":"희정이의특제케밥트럭","gps_longitude":126.9876808,"gps_latitude":37.4292171,"gps_altitude":30.94,"gps_address":"경기도 과천시 중앙동 1-3","todays_sum":null,"start_yn":null,"follow_count":null,"photo_id":null,"takeout_yn":null,"main_position":null,"category_id":null}]}
 ```
 
-* gps 정보는 옵션입니다.
-    * 넘어왔을 경우, 가까운 순으로 정렬해서 보내줍니다.
+* 모든 파라미터는 옵션입니다.
+    * 트럭 이름이 넘어왔을 경우, 그 이름이 들어간 트럭을 검색해서 보내줍니다. 이게 최우선 priority 입니다.
+    * 주소가 넘어왔을 경우, 트럭 gps 주소를 검색해서 보내줍니다. 
+      * 물론 트럭 이름이 같이 넘어왔다면(그럴 일은 없겠지만), 트럭 이름으로 검색합니다.
+    * truckName이 넘어왔을 경우, 가까운 순으로 정렬해서 보내줍니다.
+    * gps 정보가 같이 넘어왔다면, 거리순으로 order by 해서 보내줍니다.
+
 * 이름으로 검색할 때는 gps 정보가 넘어왔든 아니든 상관 안합니다. (당연한가요?)
 * 각 상황 별 에러 코드를 같이 json 으로 리턴합니다. [CodePage.txt](CodePage.txt) 를 참고해주세요!
 
@@ -116,3 +121,45 @@ Around-The-Truck-API
 | phone | 전화번호 | |
 
 * json으로 리턴합니다. [CodePage.txt](CodePage.txt)
+
+### 글 정보 받아오기
+* 한개의 글 정보를 받아옵니다.
+  * POST http://165.194.35.161:3000/getArticle
+* params
+
+| params    | 설명            |
+| -------   | --------------- |
+| idx | article의 idx |
+
+ * json 으로 리턴합니다.
+
+```
+   {"code":300,"result":[{"idx":1,"filename":"13년 생일파티.jpg",
+   "writer":"1","writer_type":1,"contents":"아주 맛있다!","like":32,
+   "belong_to":"1","reg_date":"2014-12-28 11:00:58"}]}
+```
+
+### 글 리스트 받아오기
+* 여러개의 글 정보를 받아옵니다.
+* writer에 트럭의 idx 를 넘기면 트럭의 타임라인 정보로 사용할 수 있습니다.
+  * POST http://165.194.35.161:3000/getArticleList
+* params
+
+| params    | 설명            |
+| -------   | --------------- |
+| writer | 글쓴이의 고유식별자(phone 또는 트럭idx). |
+| writer_type | 글쓴이 타입. (customer:0, truck:1) |
+
+* type이 있으므로 writer에 구분없이 넣어도 구별 가능합니다.
+
+* json으로 리턴합니다.
+
+```
+{"code":300,
+"result":[{"idx":2,"filename":"default_image.jpg","writer":"1",
+"writer_type":1,"contents":"맛없다..","like":"like","belong_to":"1",
+"reg_date":"2014-04-09 16:07:02"},
+{"idx":1,"filename":"13년 생일파티.jpg","writer":"1",
+"writer_type":1,"contents":"아주 맛있다!","like":"like","belong_to":"1",
+"reg_date":"2014-12-28 11:00:58"}]}
+```

@@ -97,10 +97,10 @@ function returnTrucks (res, client) {
 				if(tt[i]['gps_address'].indexOf(addrStr) > -1)	retVal.push(tt[i]);
 			}
 		}
-		// 5. error!
+		// 5. 아무것도 안넘겼다 - 전부 다 보내기
 		else {
-			res.end('{"code":202}');
-			return;
+			//res.end('{"code":202}');
+			for(var i=0 ; i<tt.length ; i++)	retVal.push(tt[i]);
 		}
 	}
 	jsonStr = '{"code":200,"result":'+JSON.stringify(retVal)+'}';
