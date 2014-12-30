@@ -163,3 +163,19 @@ Around-The-Truck-API
 "writer_type":1,"contents":"아주 맛있다!","like":"like","belong_to":"1",
 "reg_date":"2014-12-28 11:00:58"}]}
 ```
+
+### 사용자별 follow 리스트 받아오기
+* 특정 사용자의 follow 리스트를 받아옵니다.
+* GET http://165.194.35.161:3000/getFollowList
+* params
+  * phoneNum : 특정 사용자의 폰번호
+
+* json으로 리턴합니다.
+
+### 사용자의 point 획득내역 받아오기
+* 특정 사용자의 follow 리스트를 받아옵니다.
+* GET http://165.194.35.161:3000/getPointHistory
+* params
+  * phoneNum : 특정 사용자의 폰번호
+
+* json으로 리턴합니다.

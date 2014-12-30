@@ -62,6 +62,10 @@ app.post('/truckJoin', routesJoin.truckJoin);
 app.post('/getArticle', routesArticle.getArticle);
 // article 들을 받아온다. (by writer)
 app.post('/getArticleList', routesArticle.getArticleList);
+// 특정 사용자의 follow list 를 받아온다.
+app.get('/getFollowList', routesHistory.getFollowList);
+
+
 
 var server = http.createServer(app).listen(app.get('port'), function() {
 	console.log("Express server listening on port " + app.get('port'));

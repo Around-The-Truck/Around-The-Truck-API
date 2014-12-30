@@ -21,10 +21,10 @@ exports.getTruckList = function(req, res){
 
 	// json 으로 온 데이터를 파싱.
 	// post 로 변경될 때 여기 body 로 변경할 것!
-	longitude = req.query.longitude;
-	latitude = req.query.latitude;
-	addrStr = req.query.addrStr;
-	truckName = req.query.truckName;
+	longitude = req.param('longitude');
+	latitude = req.param('latitude');
+	addrStr = req.param('addrStr');
+	truckName = req.param('truckName');
 
 	// 모든 푸드트럭의 idx, 위치정보(gps, address), 이름을 받아온다.
 	client.query('use aroundthetruck');
