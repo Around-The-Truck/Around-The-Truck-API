@@ -98,7 +98,7 @@ exports.join = function(req, res){
 
 exports.phoneOverlapCheck = function(req, res) {
 	res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
-	phone = req.body.phone;
+	phone = req.param('phone');
 
 	// mysql 에서 찾기
 	var client = mysql.createConnection({

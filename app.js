@@ -64,8 +64,13 @@ app.post('/getArticle', routesArticle.getArticle);
 app.post('/getArticleList', routesArticle.getArticleList);
 // 특정 사용자의 follow list 를 받아온다.
 app.get('/getFollowList', routesHistory.getFollowList);
-
-
+// 게시글에 좋아요를 누른다 (사용자만 좋아요를 누를 수 있다.)
+// TODO
+app.get('/likeArticle', routesArticle.likeArticle);
+// 게시글에 댓글을 단다 (트럭, 사용자 둘 다 가능)
+app.post('/addReply', routesArticle.addReply);
+// 게시글의 댓글을 가져온다.
+app.post('/getReplyList', routesArticle.getReplyList);
 
 var server = http.createServer(app).listen(app.get('port'), function() {
 	console.log("Express server listening on port " + app.get('port'));

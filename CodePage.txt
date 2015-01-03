@@ -46,3 +46,20 @@ article	3
 303	query 실패
 304	writer 또는 writer_type이 undefined
 305	writer 또는 writer_type이 빈칸
+
+history	4
+400	정상적으로 받아옴
+401	phoneNum이 undefined
+402	phoneNum이 빈칸으로 넘어옴
+403	쿼리 실패
+
+like	5
+500	좋아요 성공
+501	articleNum Undefined
+502	articleNum 빈칸으로 넘어옴
+503	select 쿼리 실패
+
+reply	6
+600	댓글달기 성공
+601	parameter undefined
+602	parameter 빈칸으로 넘어옴
