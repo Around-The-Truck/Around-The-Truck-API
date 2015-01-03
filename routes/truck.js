@@ -171,6 +171,18 @@ exports.truckStart = function(req, res) {
 	res.writeHead(200, {'Content-Type':'json;charset=utf-8'});
 	
 	var truckIdx = req.param('idx');
+	var truckLat = req.param('lat');
+	var truckLng = req.param('lng');
+
+	if(truckIdx==undefined || truckLat==undefined || truckLng==undefined) {
+		res.end('{"code":209}');
+		return;
+	}
+	else if(truckIdx.length==0 || truckLat.length==0 || truckLng.length==0) {
+		res.end('{"code":210}');
+		return;
+	}
+
 	// mysql 접속
 	var client = mysql.createConnection({
 		host: '165.194.35.161',
@@ -179,23 +191,63 @@ exports.truckStart = function(req, res) {
 	});
 
 	client.query('use aroundthetruck');
-	//TODO
-	client.query('UPDATE truck SET `start_yn`=1, start_time=NOW() WHERE `idx`=?',
+	client.query('set names utf8');
+	client.query('select * from truck where idx=?',
 		[truckIdx],
+		function(error, result, fields) {
+			if(error) {
+				res.end('{"code":211}');
+				return;
+			}
+			else {
+				if(result.length==0) {
+					res.end('{"code":201}');
+					return;
+				}
+				else if(result[0]['start_yn']=='1') {
+					res.end('{"code":212}');
+					return;
+				}
+				else {
+					// update
+					truckStartUpdate(req, res, client, truckIdx, truckLat, truckLng);
+					return;
+				}
+				
+			}
+		}
+	);
+};
+
+function truckStartUpdate(req, res, client, truckIdx, truckLat, truckLng) {
+	client.query('UPDATE `aroundthetruck`.`truck` SET `gps_longitude`=?, `gps_latitude`=?, `start_yn`=\'1\', `start_time`=NOW() WHERE `idx`=?',
+		[truckLng, truckLat, truckIdx],
 		function(error, result) {
 			if(error) {
 				res.end('{"code":204}');
+				return;
 			}
 			else {
 				res.end('{"code":205}');
+				return;
 			}
 	});
-};
+}
+	
 
 exports.truckEnd = function(req, res) {
 	res.writeHead(200, {'Content-Type':'json;charset=utf-8'});
 	
 	var truckIdx = req.param('idx');
+
+	if(truckIdx==undefined) {
+		res.end('{"code":209}');
+		return;
+	}
+	else if(truckIdx.length==0) {
+		res.end('{"code":210}');
+		return;
+	}
 	// mysql 접속
 	var client = mysql.createConnection({
 		host: '165.194.35.161',
@@ -204,19 +256,49 @@ exports.truckEnd = function(req, res) {
 	});
 
 	client.query('use aroundthetruck');
-	//TODO
+	client.query('set names utf8');
+	client.query('select * from truck where idx=?',
+		[truckIdx],
+		function(error, result, fields) {
+			if(error) {
+				res.end('{"code":211}');
+				return;
+			}
+			else {
+				if(result.length==0) {
+					res.end('{"code":201}');
+					return;
+				}
+				else if(result[0]['start_yn']=='0') {
+					res.end('{"code":213}');
+					return;
+				}
+				else {
+					// update
+					truckEndUpdate(req, res, client, truckIdx);
+					return;
+				}
+				
+			}
+		}
+	);
+	// delete....
 	client.query('UPDATE truck SET `start_yn`=0 WHERE `idx`=?',
 		[truckIdx],
 		function(error, result) {
 			if(error) {
 				res.end('{"code":206}');
+				return;
 			}
 			else {
-				//res.end('{"code":205}');
 				insertOpenHistory(client, res, truckIdx);
+				return;
 			}
 	});
 };
+function truckEndUpdate(req, res, client, truckIdx) {
+
+}
 
 var insertOpenHistory = function(client, res, idx) {
 	client.query('insert into open_history (truckIdx, start, end) values ('+idx+', (select start_time from truck where idx='+idx+'), NOW())',

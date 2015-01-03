@@ -33,11 +33,14 @@ truck	2
 201	디비에 트럭이 없다! ㄷㄷ..
 202	아무 정보도 넘기지 않았다.
 203	truck idx를 넘기지 않았다.
-204	트럭 start 오류
+204	트럭 start 오류 (쿼리 에러)
 205	정상적으로 장사 시작됨.
-206	트럭 end 오류 (truck.start_yn)
-207	트럭 end 오류 (open_history)
+206	트럭 end 오류 (쿼리에러: truck.start_yn)
+207	트럭 end 오류 (쿼리에러: open_history)
 208	정상적으로 장사 끝남.
+209	파라미터 undefined
+210	파라미터 빈칸으로 넘어옴
+211	쿼리 에러 (트럭 select 시)
 
 article	3
 300	정상적으로 받아옴
@@ -63,3 +66,7 @@ reply	6
 600	댓글달기 성공
 601	parameter undefined
 602	parameter 빈칸으로 넘어옴
+603	쿼리 에러 (글이 있나 확인할 때)
+604	글이 없다!
+605	쿼리 에러 (reply 테이블에 insert 작업 시)
+606	쿼리 에러 (getReplyList 에서)

@@ -49,9 +49,9 @@ app.get('/getTruckList', routesTruck.getTruckList);
 // 한개 트럭 정보 불러오기
 app.get('/getTruckInfo', routesTruck.getTruckInfo);
 // 장사 시작
-app.get('/truckStart', routesTruck.truckStart);
+app.post('/truckStart', routesTruck.truckStart);
 // 장사 끝
-app.get('/truckEnd', routesTruck.truckEnd);
+app.post('/truckEnd', routesTruck.truckEnd);
 // 파일 업로드 (테스트)
 app.post('/upload', routesUpload.upload);
 // 유효한 고유번호인지 확인
