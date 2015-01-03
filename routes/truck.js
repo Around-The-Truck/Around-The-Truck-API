@@ -333,3 +333,228 @@ function UTCtoLocal(str, fieldName) {
 	}
 	return str;
 }
+
+exports.followTruck = function(req, res) {
+// num 받는다.
+res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
+
+	truckIdx = req.param('truckIdx');
+	phoneNum = req.param('phoneNum');
+
+	if(truckIdx==undefined || phoneNum==undefined) {
+		res.end('{"code":501}');
+		return;
+	}
+	else if(truckIdx.length==0 || phoneNum.length==0) {
+		res.end('{"code":502}');
+		return;
+	}
+
+	var client = mysql.createConnection({
+		host: '165.194.35.161',
+		user: 'food',
+		password: 'truck'
+	});
+
+	// find
+	client.query('use aroundthetruck');
+	client.query('set names utf8');
+	client.query('select * from truck where idx=?',
+		[truckIdx],
+		function(error, result, fields) {
+			if(error) {
+				res.end('{"code":503}');
+				return;
+			}
+			else {
+				if(result.length==0) {
+					res.end('{"code":509}');
+					return;		
+				}
+				else {
+					followTruckSelect(req, res, client, truckIdx, phoneNum);
+				}
+			}
+		}
+	);
+};
+function followTruckSelect(req, res, client, truckIdx, phoneNum) {
+	client.query('select * from aroundthetruck.follow_list where customer=? and tidx=?',
+		[phoneNum, truckIdx],
+		function(error, result, fields) {
+			if(error) {
+				res.end('{"code":503}');
+				return;
+			}
+			// 팔로우를 안했으므로 팔로우를 누른다. update & insert
+			else if(result.length==0) {
+				followTruckUpdate(req, res, client, truckIdx, phoneNum);
+				return;
+			}
+			// 이미 팔로우를 눌렀다.
+			else if(result.length==1) {
+				res.end('{"code":507}');
+				return;
+			}
+			// 그 외 디비 무결성 파괴의 경우...
+			else {
+				res.end('{"code":508}');
+				return;
+			}
+		}
+	);
+}
+
+function followTruckUpdate(req, res, client, truckIdx, phoneNum) {
+	client.query('update aroundthetruck.truck set `follow_count`=`follow_count`+1 where idx=?',
+		[truckIdx],
+		function(error, result) {
+			if(error) {
+				res.end('{"code":510}');
+				return;
+			}
+			else {
+				followTruckInsert(req, res, client, truckIdx, phoneNum);
+				return;
+			}
+	});
+}
+
+function followTruckInsert(req, res, client, truckIdx, phoneNum) {
+	client.query('INSERT INTO `aroundthetruck`.`follow_list` (`customer`, `tidx`) VALUES (?, ?)',
+		[phoneNum, truckIdx],
+		function(err, result) {
+			if(err) {
+				res.end('{"code":506}');
+				return;
+			}
+			else {
+				res.end('{"code":500}');
+				return;
+			}
+		}
+	);
+}
+
+exports.unfollowTruck = function(req, res) {
+res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
+
+	truckIdx = req.param('truckIdx');
+	phoneNum = req.param('phoneNum');
+
+	if(truckIdx==undefined || phoneNum==undefined) {
+		res.end('{"code":501}');
+		return;
+	}
+	else if(truckIdx.length==0 || phoneNum.length==0) {
+		res.end('{"code":502}');
+		return;
+	}
+
+	var client = mysql.createConnection({
+		host: '165.194.35.161',
+		user: 'food',
+		password: 'truck'
+	});
+
+	// find
+	client.query('use aroundthetruck');
+	client.query('set names utf8');
+	client.query('select * from truck where idx=?',
+		[truckIdx],
+		function(error, result, fields) {
+			if(error) {
+				res.end('{"code":503}');
+				return;
+			}
+			else {
+				if(result.length==0) {
+					res.end('{"code":509}');
+					return;		
+				}
+				else {
+					unfollowTruckSelect(req, res, client, truckIdx, phoneNum);
+				}
+			}
+		}
+	);
+};
+function unfollowTruckSelect(req, res, client, truckIdx, phoneNum) {
+	client.query('select * from aroundthetruck.follow_list where customer=? and tidx=?',
+		[phoneNum, truckIdx],
+		function(error, result, fields) {
+			if(error) {
+				res.end('{"code":503}');
+				return;
+			}
+			// 애초에 팔로우를 안했다.
+			else if(result.length==0) {
+				res.end('{"code":511}');
+				return;
+			}
+			// 팔로우를 해제. update & insert
+			else if(result.length==1) {
+				zeroCheck(req, res, client, truckIdx, phoneNum);
+				return;
+			}
+			// 그 외 디비 무결성 파괴의 경우...
+			else {
+				res.end('{"code":508}');
+				return;
+			}
+		}
+	);
+}
+
+function zeroCheck (req, res, client, truckIdx, phoneNum) {
+	client.query('select if ((select `follow_count` from truck where idx=?)=0, "zero", "non-zero") as retVal',
+		[truckIdx],
+		function (error, result, fields) {
+			if(error) {
+				res.end('{"code":512}');
+				return;
+			}
+			// count down 하려 봤더니 이미 0이다... 
+			else if (result[0]['retVal']=="zero") {
+				// 바로 delete 작업을 실행
+				console.log("goto delete directly (truck)");
+				unfollowTruckDelete(req, res, client, truckIdx, phoneNum);
+			}
+			else {
+				unfollowTruckUpdate(req, res, client, truckIdx, phoneNum);
+				return;
+			}
+		}
+	);
+}
+
+function unfollowTruckUpdate(req, res, client, truckIdx, phoneNum) {
+	client.query('update aroundthetruck.truck set `follow_count`=`follow_count`-1 where idx=?',
+		[truckIdx],
+		function(error, result) {
+			if(error) {
+				res.end('{"code":510}');
+				return;
+			}
+			else {
+				unfollowTruckDelete(req, res, client, truckIdx, phoneNum);
+				return;
+			}
+	});
+}
+
+function unfollowTruckDelete(req, res, client, truckIdx, phoneNum) {
+	client.query('delete from `aroundthetruck`.`follow_list` where `customer`=? and `tidx`=?',
+		[phoneNum, truckIdx],
+		function(err, result) {
+			if(err) {
+				res.end('{"code":506}');
+				return;
+			}
+			else {
+				res.end('{"code":500}');
+				return;
+			}
+		}
+	);
+}

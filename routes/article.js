@@ -106,12 +106,13 @@ exports.likeArticle = function(req, res) {
 res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
 
 	articleNum = req.param('articleNum');
+	phoneNum = req.param('phoneNum');
 
-	if(articleNum==undefined) {
+	if(articleNum==undefined || phoneNum==undefined) {
 		res.end('{"code":501}');
 		return;
 	}
-	else if(articleNum.length==0) {
+	else if(articleNum.length==0 || phoneNum.length==0) {
 		res.end('{"code":502}');
 		return;
 	}
@@ -122,11 +123,10 @@ res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
 		password: g_pw
 	});
 
-
 	// find
 	client.query('use aroundthetruck');
 	client.query('set names utf8');
-	client.query('select * from article idx=?',
+	client.query('select * from article where idx=?',
 		[articleNum],
 		function(error, result, fields) {
 			if(error) {
@@ -134,13 +134,75 @@ res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
 				return;
 			}
 			else {
-				// insert
-				articleLikeCountUp(req, res, client, articleNum);
+				if(result.length==0) {
+					res.end('{"code":504}');
+					return;		
+				}
+				else {
+					likeArticleSelect(req, res, client, articleNum, phoneNum);
+					return;
+				}
 			}
 		}
 	);
-// update
 };
+function likeArticleSelect(req, res, client, articleNum, phoneNum) {
+	client.query('select * from aroundthetruck.article_like_list where customer_phone=? and article_idx=?',
+		[phoneNum, articleNum],
+		function(error, result, fields) {
+			if(error) {
+				res.end('{"code":503}');
+				return;
+			}
+			// 좋아요를 안했으므로 좋아요를 누른다. update & insert
+			else if(result.length==0) {
+				likeArticleUpdate(req, res, client, articleNum, phoneNum);
+				return;
+			}
+			// 이미 좋아요를 눌렀다.
+			else if(result.length==1) {
+				res.end('{"code":507}');
+				return;
+			}
+			// 그 외 디비 무결성 파괴의 경우...
+			else {
+				res.end('{"code":508}');
+				return;
+			}
+		}
+	);
+}
+
+function likeArticleUpdate(req, res, client, articleNum, phoneNum) {
+	client.query('update aroundthetruck.article set `like`=`like`+1 where idx=?',
+		[articleNum],
+		function(error, result) {
+			if(error) {
+				res.end('{"code":505}');
+				return;
+			}
+			else {
+				likeArticleInsert(req, res, client, articleNum, phoneNum);
+				return;
+			}
+	});
+}
+
+function likeArticleInsert(req, res, client, articleNum, phoneNum) {
+	client.query('INSERT INTO `aroundthetruck`.`article_like_list` (`customer_phone`, `article_idx`) VALUES (?, ?)',
+		[phoneNum, articleNum],
+		function(err, result) {
+			if(err) {
+				res.end('{"code":506}');
+				return;
+			}
+			else {
+				res.end('{"code":500}');
+				return;
+			}
+		}
+	);
+}
 
 exports.addReply = function(req, res) {
 	res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
@@ -245,3 +307,126 @@ exports.getReplyList = function(req, res) {
 		}
 	);
 };
+
+exports.unlikeArticle = function(req, res) {
+res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
+
+	articleNum = req.param('articleNum');
+	phoneNum = req.param('phoneNum');
+
+	if(articleNum==undefined || phoneNum==undefined) {
+		res.end('{"code":501}');
+		return;
+	}
+	else if(articleNum.length==0 || phoneNum.length==0) {
+		res.end('{"code":502}');
+		return;
+	}
+
+	var client = mysql.createConnection({
+		host: '165.194.35.161',
+		user: 'food',
+		password: 'truck'
+	});
+
+	// find
+	client.query('use aroundthetruck');
+	client.query('set names utf8');
+	client.query('select * from article where idx=?',
+		[articleNum],
+		function(error, result, fields) {
+			if(error) {
+				res.end('{"code":503}');
+				return;
+			}
+			else {
+				if(result.length==0) {
+					res.end('{"code":504}');
+					return;		
+				}
+				else {
+					unlikeArticleSelect(req, res, client, articleNum, phoneNum);
+				}
+			}
+		}
+	);
+};
+function unlikeArticleSelect(req, res, client, articleNum, phoneNum) {
+	client.query('select * from aroundthetruck.article_like_list where customer_phone=? and article_idx=?',
+		[phoneNum, articleNum],
+		function(error, result, fields) {
+			if(error) {
+				res.end('{"code":503}');
+				return;
+			}
+			// 애초에 좋아요를 안했다.
+			else if(result.length==0) {
+				res.end('{"code":511}');
+				return;
+			}
+			// 팔로우를 해제. update & insert
+			else if(result.length==1) {
+				zeroCheckArticle (req, res, client, articleNum, phoneNum);
+				return;
+			}
+			// 그 외 디비 무결성 파괴의 경우...
+			else {
+				res.end('{"code":508}');
+				return;
+			}
+		}
+	);
+}
+
+function zeroCheckArticle (req, res, client, articleNum, phoneNum) {
+	client.query('select if ((select `like` from article where idx=?)=0, "zero", "non-zero") as retVal',
+		[articleNum],
+		function (error, result, fields) {
+			if(error) {
+				res.end('{"code":512}');
+				return;
+			}
+			// count down 하려 봤더니 이미 0이다... 
+			else if (result[0]['retVal']=="zero") {
+				// 바로 delete 작업을 실행
+				console.log("goto delete directly (article)");
+				unlikeArticleDelete(req, res, client, articleNum, phoneNum);
+			}
+			else {
+				unlikeArticleUpdate(req, res, client, articleNum, phoneNum);
+				return;
+			}
+		}
+	);
+}
+
+function unlikeArticleUpdate(req, res, client, articleNum, phoneNum) {
+	client.query('update aroundthetruck.article set `like`=`like`-1 where idx=?',
+		[articleNum],
+		function(error, result) {
+			if(error) {
+				res.end('{"code":513}');
+				return;
+			}
+			else {
+				unlikeArticleDelete(req, res, client, articleNum, phoneNum);
+				return;
+			}
+	});
+}
+
+function unlikeArticleDelete(req, res, client, articleNum, phoneNum) {
+	client.query('delete from `aroundthetruck`.`article_like_list` where `customer_phone`=? and `article_idx`=?',	
+		[phoneNum, articleNum],
+		function(err, result) {
+			if(err) {
+				res.end('{"code":506}');
+				return;
+			}
+			else {
+				res.end('{"code":500}');
+				return;
+			}
+		}
+	);
+}
