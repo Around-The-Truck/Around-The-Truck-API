@@ -282,7 +282,9 @@ exports.truckEnd = function(req, res) {
 			}
 		}
 	);
-	// delete....
+};
+
+function truckEndUpdate(req, res, client, truckIdx) {
 	client.query('UPDATE truck SET `start_yn`=0 WHERE `idx`=?',
 		[truckIdx],
 		function(error, result) {
@@ -295,9 +297,6 @@ exports.truckEnd = function(req, res) {
 				return;
 			}
 	});
-};
-function truckEndUpdate(req, res, client, truckIdx) {
-
 }
 
 var insertOpenHistory = function(client, res, idx) {

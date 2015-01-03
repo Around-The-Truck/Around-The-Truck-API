@@ -87,14 +87,24 @@ Around-The-Truck-API
 * json 으로 리턴합니다. (너무 많네요..) [CodePage.txt](CodePage.txt)
 
 ### 트럭 장사 시작
-* 장사 시작입니다. 3번 트럭의 경우, 
-  * GET http://165.194.35.161:3000/truckStart?idx=3
+* 장사 시작입니다.
+  * POST http://165.194.35.161:3000/truckStart?idx=3
+
+* params 
+
+| params    | 설명            |
+| -------   | --------------- |
+| idx | 트럭고유번호 |
+| lat | gps latitude |
+| lng | gps longitude |
+
 * json 으로 리턴합니다. 주요 코드는 다음과 같습니다. 
 
 | code    | 설명            |
 | -------   | --------------- |
 | 204 | 트럭 start 오류 |
 | **205** | **정상적으로 장사 시작됨.** |
+| 212 |  이미 장사 시작됨 |
 
 ### 트럭 장사 끝
 * 장사 끝 입니다. 3번 트럭의 경우, 
@@ -106,6 +116,7 @@ Around-The-Truck-API
 | 206 | 트럭 end 오류 (truck.start_yn) |
 | 207 | 트럭 end 오류 (open_history) |
 | **208** | **정상적으로 장사 끝남.** |
+| 213 |  이미 장사 끝남 |
 
 ### 손님 회원가입
 * 손님 회원가입입니다. 
@@ -179,3 +190,34 @@ Around-The-Truck-API
   * phoneNum : 특정 사용자의 폰번호
 
 * json으로 리턴합니다.
+
+### 댓글 달기
+* 특정 글에 댓글을 답니다.
+* POST http://165.194.35.161:3000/addReply
+* params
+
+| params    | 설명            |
+| -------   | --------------- |
+| articleIdx | 글의 고유 식별자 |
+| writer | 글쓴이의 고유식별자. 사용자는 폰번호, 트럭은 트럭번호 |
+| writerType | 글쓴이 타입. 사용자는 0, 트럭은 1 |
+| contents | 내용 |
+
+* json으로 리턴합니다.
+  * [CodePage.txt](CodePage.txt)
+
+### 댓글 목록 받아오기
+* 특정 글에 달린 댓글들을 받아옵니다.
+* POST http://165.194.35.161:3000/getReplyList
+* params
+ * articleIdx : 글번호
+* json으로 리턴합니다.
+
+```
+{"code":600,"result":[{"idx":1,"contents":"와 진짜 맛있어 보이네요 ㅎㅎ",
+"writer":"01044550423","writer_type":0,"article_idx":1,
+"reg_date":"2015-01-03 16:52:03"},
+{"idx":3,"contents":"저기 빨간건 재료가 뭔가요?",
+"writer":"01044550423","writer_type":0,"article_idx":1,
+"reg_date":"2015-01-03 17:55:06"}]}
+```
