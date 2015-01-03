@@ -15,8 +15,18 @@ Around-The-Truck-API
 * json 으로 리턴합니다. ex)
 
 ```
-  {"code":200,
-   "result":[{"idx":2,"name":"희정이의특제케밥트럭","gps_longitude":126.9876808,"gps_latitude":37.4292171,"gps_altitude":30.94,"gps_address":"경기도 과천시 중앙동 1-3","todays_sum":null,"start_yn":null,"follow_count":null,"photo_id":null,"takeout_yn":null,"main_position":null,"category_id":null}]}
+  {"code":200,"result":[{"idx":1,"name":"맛있는새우트럭","phone_num":null,"gps_longitude":126.980444,
+  "gps_latitude":37.494529,"gps_altitude":30.94,"gps_address":"한국 서울특별시 동작구 동작동 63-22",
+  "todays_sum":null,"start_yn":0,"start_time":"NaN-NaN-NaN NaN:NaN:NaN","follow_count":null,
+  "photo_id":null,"main_position":null,"category_id":null,"category_small":null,"takeout_yn":null,
+  "cansit_yn":null,"card_yn":null,"reserve_yn":null,"group_order_yn":null,"always_open_yn":null,
+  "reg_date":"1970-01-01 09:00:00","open_date":"1970-01-01 09:00:00"},
+  {"idx":2,"name":"희정이의특제케밥트럭","phone_num":null,"gps_longitude":126.9876808,
+  "gps_latitude":37.4292171,"gps_altitude":30.94,"gps_address":"경기도 과천시 중앙동 1-3",
+  "todays_sum":null,"start_yn":null,"start_time":"1970-01-01 09:00:00","follow_count":null,
+  "photo_id":null,"main_position":null,"category_id":null,"category_small":null,
+  "takeout_yn":null,"cansit_yn":null,"card_yn":null,"reserve_yn":null,"group_order_yn":null,
+  "always_open_yn":null,"reg_date":"1970-01-01 09:00:00","open_date":"1970-01-01 09:00:00"}]}
 ```
 
 * 모든 파라미터는 옵션입니다.
@@ -41,7 +51,12 @@ Around-The-Truck-API
 
 ```
    {"code":200,
-    "result":[{"idx":1,"name":"맛있는새우트럭","phone_num":null,"gps_longitude":126.980444,"gps_latitude":37.494529,"gps_altitude":30.94,"gps_address":"한국 서울특별시 동작구 동작동 63-22","todays_sum":null,"start_yn":1,"start_time":"2014-12-20T11:14:40.000Z","follow_count":null,"photo_id":null,"main_position":null,"category_id":null,"category_small":null,"takeout_yn":null,"cansit_yn":null,"card_yn":null,"reserve_yn":null,"group_order_yn":null,"always_open_yn":null,"reg_date":null,"open_date":null}]}
+    "result":[{"idx":1,"name":"맛있는새우트럭","phone_num":null,"gps_longitude":126.980444,
+    "gps_latitude":37.494529,"gps_altitude":30.94,"gps_address":"한국 서울특별시 동작구 동작동 63-22",
+    "todays_sum":null,"start_yn":1,"start_time":"2014-12-20T11:14:40.000Z","follow_count":null,
+    "photo_id":null,"main_position":null,"category_id":null,"category_small":null,
+    "takeout_yn":null,"cansit_yn":null,"card_yn":null,"reserve_yn":null,"group_order_yn":null,
+    "always_open_yn":null,"reg_date":null,"open_date":null}]}
 ```
 
 ### 트럭 회원가입 - 고유번호 입력
