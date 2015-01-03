@@ -15,18 +15,18 @@ Around-The-Truck-API
 * json 으로 리턴합니다. ex)
 
 ```
-  {"code":200,"result":[{"idx":1,"name":"맛있는새우트럭","phone_num":null,"gps_longitude":126.980444,
-  "gps_latitude":37.494529,"gps_altitude":30.94,"gps_address":"한국 서울특별시 동작구 동작동 63-22",
-  "todays_sum":null,"start_yn":0,"start_time":"NaN-NaN-NaN NaN:NaN:NaN","follow_count":null,
-  "photo_id":null,"main_position":null,"category_id":null,"category_small":null,"takeout_yn":null,
-  "cansit_yn":null,"card_yn":null,"reserve_yn":null,"group_order_yn":null,"always_open_yn":null,
-  "reg_date":"1970-01-01 09:00:00","open_date":"1970-01-01 09:00:00"},
-  {"idx":2,"name":"희정이의특제케밥트럭","phone_num":null,"gps_longitude":126.9876808,
-  "gps_latitude":37.4292171,"gps_altitude":30.94,"gps_address":"경기도 과천시 중앙동 1-3",
-  "todays_sum":null,"start_yn":null,"start_time":"1970-01-01 09:00:00","follow_count":null,
-  "photo_id":null,"main_position":null,"category_id":null,"category_small":null,
-  "takeout_yn":null,"cansit_yn":null,"card_yn":null,"reserve_yn":null,"group_order_yn":null,
-  "always_open_yn":null,"reg_date":"1970-01-01 09:00:00","open_date":"1970-01-01 09:00:00"}]}
+{"code":200,"result":[{"idx":1,"name":"맛있는새우트럭","phone_num":null,"gps_longitude":126.980444,
+"gps_latitude":37.494529,"gps_altitude":30.94,"gps_address":"한국 서울특별시 동작구 동작동 63-22",
+"todays_sum":null,"start_yn":0,"start_time":"NaN-NaN-NaN NaN:NaN:NaN","follow_count":null,
+"photo_id":null,"main_position":null,"category_id":null,"category_small":null,"takeout_yn":null,
+"cansit_yn":null,"card_yn":null,"reserve_yn":null,"group_order_yn":null,"always_open_yn":null,
+"reg_date":"1970-01-01 09:00:00","open_date":"1970-01-01 09:00:00"},
+{"idx":2,"name":"희정이의특제케밥트럭","phone_num":null,"gps_longitude":126.9876808,
+"gps_latitude":37.4292171,"gps_altitude":30.94,"gps_address":"경기도 과천시 중앙동 1-3",
+"todays_sum":null,"start_yn":null,"start_time":"1970-01-01 09:00:00","follow_count":null,
+"photo_id":null,"main_position":null,"category_id":null,"category_small":null,
+"takeout_yn":null,"cansit_yn":null,"card_yn":null,"reserve_yn":null,"group_order_yn":null,
+"always_open_yn":null,"reg_date":"1970-01-01 09:00:00","open_date":"1970-01-01 09:00:00"}]}
 ```
 
 * 모든 파라미터는 옵션입니다.
@@ -50,13 +50,13 @@ Around-The-Truck-API
  * json 으로 리턴합니다.
 
 ```
-   {"code":200,
-    "result":[{"idx":1,"name":"맛있는새우트럭","phone_num":null,"gps_longitude":126.980444,
-    "gps_latitude":37.494529,"gps_altitude":30.94,"gps_address":"한국 서울특별시 동작구 동작동 63-22",
-    "todays_sum":null,"start_yn":1,"start_time":"2014-12-20T11:14:40.000Z","follow_count":null,
-    "photo_id":null,"main_position":null,"category_id":null,"category_small":null,
-    "takeout_yn":null,"cansit_yn":null,"card_yn":null,"reserve_yn":null,"group_order_yn":null,
-    "always_open_yn":null,"reg_date":null,"open_date":null}]}
+{"code":200,
+"result":[{"idx":1,"name":"맛있는새우트럭","phone_num":null,"gps_longitude":126.980444,
+"gps_latitude":37.494529,"gps_altitude":30.94,"gps_address":"한국 서울특별시 동작구 동작동 63-22",
+"todays_sum":null,"start_yn":1,"start_time":"2014-12-20T11:14:40.000Z","follow_count":null,
+"photo_id":null,"main_position":null,"category_id":null,"category_small":null,
+"takeout_yn":null,"cansit_yn":null,"card_yn":null,"reserve_yn":null,"group_order_yn":null,
+"always_open_yn":null,"reg_date":null,"open_date":null}]}
 ```
 
 ### 트럭 회원가입 - 고유번호 입력
@@ -160,9 +160,9 @@ Around-The-Truck-API
  * json 으로 리턴합니다.
 
 ```
-   {"code":300,"result":[{"idx":1,"filename":"13년 생일파티.jpg",
-   "writer":"1","writer_type":1,"contents":"아주 맛있다!","like":32,
-   "belong_to":"1","reg_date":"2014-12-28 11:00:58"}]}
+  {"code":300,"result":[{"idx":1,"filename":"13년 생일파티.jpg",
+  "writer":"1","writer_type":1,"contents":"아주 맛있다!","like":32,
+  "belong_to":"1","reg_date":"2014-12-28 11:00:58"}]}
 ```
 
 ### 글 리스트 받아오기
@@ -181,13 +181,13 @@ Around-The-Truck-API
 * json으로 리턴합니다.
 
 ```
-{"code":300,
-"result":[{"idx":2,"filename":"default_image.jpg","writer":"1",
-"writer_type":1,"contents":"맛없다..","like":"like","belong_to":"1",
-"reg_date":"2014-04-09 16:07:02"},
-{"idx":1,"filename":"13년 생일파티.jpg","writer":"1",
-"writer_type":1,"contents":"아주 맛있다!","like":"like","belong_to":"1",
-"reg_date":"2014-12-28 11:00:58"}]}
+  {"code":300,
+  "result":[{"idx":2,"filename":"default_image.jpg","writer":"1",
+  "writer_type":1,"contents":"맛없다..","like":"like","belong_to":"1",
+  "reg_date":"2014-04-09 16:07:02"},
+  {"idx":1,"filename":"13년 생일파티.jpg","writer":"1",
+  "writer_type":1,"contents":"아주 맛있다!","like":"like","belong_to":"1",
+  "reg_date":"2014-12-28 11:00:58"}]}
 ```
 
 ### 사용자별 follow 리스트 받아오기
@@ -229,10 +229,10 @@ Around-The-Truck-API
 * json으로 리턴합니다.
 
 ```
-{"code":600,"result":[{"idx":1,"contents":"와 진짜 맛있어 보이네요 ㅎㅎ",
-"writer":"01044550423","writer_type":0,"article_idx":1,
-"reg_date":"2015-01-03 16:52:03"},
-{"idx":3,"contents":"저기 빨간건 재료가 뭔가요?",
-"writer":"01044550423","writer_type":0,"article_idx":1,
-"reg_date":"2015-01-03 17:55:06"}]}
+  {"code":600,"result":[{"idx":1,"contents":"와 진짜 맛있어 보이네요 ㅎㅎ",
+  "writer":"01044550423","writer_type":0,"article_idx":1,
+  "reg_date":"2015-01-03 16:52:03"},
+  {"idx":3,"contents":"저기 빨간건 재료가 뭔가요?",
+  "writer":"01044550423","writer_type":0,"article_idx":1,
+  "reg_date":"2015-01-03 17:55:06"}]}
 ```
