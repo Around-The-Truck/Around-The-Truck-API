@@ -30,7 +30,8 @@ Around-The-Truck-API
 | [latitude]  | 위도 |
 | [longitude] | 경도    |
 | [addrStr]   | 서울, 경기 이런 식으로 주소 검색할 때 |
-* json 으로 리턴합니다. ex)
+* json 으로 리턴합니다.
+* gps 정보가 올바르게 넘어갔다면, 사용자로부터의 거리(distFromUser)도 같이 나옵니다.
 
 ```
 {"code":200,"result":[{"idx":1,"name":"맛있는새우트럭","phone_num":null,"gps_longitude":126.980444,

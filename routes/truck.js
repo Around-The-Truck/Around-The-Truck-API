@@ -87,6 +87,8 @@ function returnTrucks (res, client) {
 			// req로 넘겨받은 사용자의 위치를 계산한다.
 		else {
 			tt.sort(function(a,b){return a['distFromUser']-b['distFromUser']});
+			// 전부다 푸시
+			for(var i=0 ; i<tt.length ; i++)	retVal.push(tt[i]);
 		}
 	}
 	// gps정보가 없는 경우,
@@ -99,7 +101,6 @@ function returnTrucks (res, client) {
 		}
 		// 5. 아무것도 안넘겼다 - 전부 다 보내기
 		else {
-			//res.end('{"code":202}');
 			for(var i=0 ; i<tt.length ; i++)	retVal.push(tt[i]);
 		}
 	}
