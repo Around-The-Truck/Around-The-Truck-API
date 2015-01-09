@@ -82,3 +82,9 @@ reply	6
 604	글이 없다!
 605	쿼리 에러 (reply 테이블에 insert 작업 시)
 606	쿼리 에러 (getReplyList 에서)
+
+calculate	7
+700	성공
+701	parameter undefined
+702	parameter 빈칸으로 넘어옴
+703	쿼리 에러: calculate select

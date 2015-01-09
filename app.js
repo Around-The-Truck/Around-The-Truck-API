@@ -9,6 +9,7 @@ var routesTruck = require('./routes/truck');
 var routesUpload = require('./routes/upload');
 var routesArticle = require('./routes/article');
 var routesHistory = require('./routes/history');
+var routesPayment = require('./routes/payment');
 var http = require('http');
 var path = require('path');
 
@@ -76,9 +77,18 @@ app.get('/followTruck', routesTruck.followTruck);
 app.get('/unfollowTruck', routesTruck.unfollowTruck);
 // 게시글 좋아요를 취소한다. (사용자만 가능)
 app.get('/unlikeArticle', routesArticle.unlikeArticle);
+// TODO : 정산하기
+app.get('/calculate', routesPayment.calculate);
+// TODO : 메뉴 불러오기
+// TODO : 결제 실행
+app.get('/pay', routesPayment.pay);
+
 // TODO : 게시글 작성 (트럭만 가능)
-// 결제 실행
-app.get('/')
+// TODO : 메뉴 등록
+// TODO : 손님 회원가입 다시짜기 (번호인증 포함)
+
+
+
 var server = http.createServer(app).listen(app.get('port'), function() {
 	console.log("Express server listening on port " + app.get('port'));
 });
