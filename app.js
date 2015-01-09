@@ -78,7 +78,7 @@ app.get('/unfollowTruck', routesTruck.unfollowTruck);
 // 게시글 좋아요를 취소한다. (사용자만 가능)
 app.get('/unlikeArticle', routesArticle.unlikeArticle);
 // TODO : 정산하기
-app.post('/calculate', routesPayment.calculate);
+app.get('/calculate', routesPayment.calculate);
 // TODO : 메뉴 불러오기
 // TODO : 결제 실행
 app.get('/pay', routesPayment.pay);

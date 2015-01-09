@@ -72,7 +72,7 @@ function getMoreInfo (res, req, client, result_open_history, truckIdx) {
 		return;
 	}
 
-	client.query('select idx, group_idx, menu_idx, (select name from menu where idx=buy_history.menu_idx) as menu_name, price as paid, customer_phone, reg_date from buy_history where truck_idx=?',
+	client.query('select idx, group_idx, menu_idx, (select name from menu where idx=buy_history.menu_idx) as menu_name, price as paid, customer_phone, (select age from customer where phone=buy_history.customer_phone) as customer_age, (select gender from customer where phone=buy_history.customer_phone) as customer_gender, reg_date from buy_history where truck_idx=?',
 		[truckIdx],
 		function (error, result_buy_history, fields) {
 			if (error) {
@@ -88,6 +88,7 @@ function getMoreInfo (res, req, client, result_open_history, truckIdx) {
 }
 
 function assemble (res, req, client, result_open_history, result_buy_history, truckIdx) {
+
 	// history 배열 생성
 	for(var i=0 ; i<result_open_history.length ; i++) {
 		result_open_history[i]['history'] = Array();
@@ -102,15 +103,77 @@ function assemble (res, req, client, result_open_history, result_buy_history, tr
 			}
 		}
 	}
-
+	// 정산 사항들 계산
+	//open_history: truckIdx, start, end, todays_sum
+	//buy_history: idx, group_idx, menu_idx, menu_name, paid, 
+	// 				customer_phone, customer_age, customer_gender, reg_date
 	for(var i=0 ; i<result_open_history.length ; i++) {
 		var people = Array();
-		var age = Array();
+		var age = Array(0,0,0,0,0,0,0,0,0,0);
 		var cntMale = 0;
 		var cntFemale = 0;
+
+		var menuIdxArr = Array();
+		var menuCntArr = Array();
+		var menuNameArr = Array();
+
 		for(var j=0 ; j<result_open_history[i]['history'].length ; j++) {
-			
+			// 성별
+			if(result_open_history[i]['history'][j]['customer_gender']==1)
+				cntMale++;
+			else
+				cntFemale++;
+
+			// 연령대
+			age[parseInt(result_open_history[i]['history'][j]['customer_age']/10,10)]++;
+
+			// 손님 수 계산
+			if(people.indexOf(result_open_history[i]['history'][j]['customer_phone'])==-1) {
+				people.push(result_open_history[i]['history'][j]['customer_phone']);
+			}
+
+			// 메뉴 관련
+			idxof = menuNameArr.indexOf(result_open_history[i]['history'][j]['menu_name']);
+			if(idxof==-1) {
+				menuNameArr.push(result_open_history[i]['history'][j]['menu_name']);
+				menuIdxArr.push(result_open_history[i]['history'][j]['menu_idx']);
+				menuCntArr.push(1);
+			}
+			else {
+				menuCntArr[idxof]++;
+			}
 		}
+		//push: 1인당 평균 매출 
+		result_open_history[i]['salesPerPerson'] = result_open_history[i]['todays_sum']/people.length;
+		//push: 연령별
+		result_open_history[i]['historyAge'] = age;
+		//push: 성별
+		result_open_history[i]['historyGender'] = [cntMale, cntFemale];
+		
+		//sort: 메뉴
+		menuNameArr.sort(
+			function (a,b) {
+				var idxA = menuNameArr.indexOf(a);
+				var idxB = menuNameArr.indexOf(b);
+				return menuCntArr[idxB]-menuCntArr[idxA];
+			}
+		);
+		menuIdxArr.sort(
+			function (a,b) {
+				var idxA = menuIdxArr.indexOf(a);
+				var idxB = menuIdxArr.indexOf(b);
+				return menuCntArr[idxB]-menuCntArr[idxA];
+			}
+		);
+		menuCntArr.sort(
+			function (a,b) {
+				return b-a;
+			}
+		);
+		//push: 메뉴
+		result_open_history[i]['historyMenuName'] = menuNameArr;
+		result_open_history[i]['historyMenuIdx'] = menuIdxArr;
+		result_open_history[i]['historyMenuCount'] = menuCntArr;
 	}
 
 	jsonStr = '{"code":700,"result":'+JSON.stringify(result_open_history)+'}';

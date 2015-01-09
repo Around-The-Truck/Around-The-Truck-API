@@ -368,8 +368,8 @@ var insertRowImage = function(client, res, fileName) {
 }
 
 var insertRowTruck = function(client, res, photoIdx) {
-	client.query('UPDATE `aroundthetruck`.`truck` SET `name`=?, `phone_num`=?, `start_yn`=?, `follow_count`=?, `photo_id`=?, `category_id`=?, `category_small`=?, `takeout_yn`=?, `cansit_yn`=?, `card_yn`=?, `reserve_yn`=?, `group_order_yn`=?, `always_open_yn`=?, `reg_date`=NOW(), `open_date`=? WHERE `idx`=?',	
-		[g_truck_truckName, g_truck_phone, 0, 0, photoIdx, g_truck_category_big, g_truck_category_small, g_truck_takeout_yn, g_truck_cansit_yn, g_truck_card_yn, g_truck_reserve_yn, g_truck_group_order_yn, g_truck_always_open_yn, g_truck_openDate, g_truck_idx],
+	client.query('UPDATE `aroundthetruck`.`truck` SET `name`=?, `phone_num`=?, `todays_sum`=?, `start_yn`=?, `follow_count`=?, `photo_id`=?, `category_id`=?, `category_small`=?, `takeout_yn`=?, `cansit_yn`=?, `card_yn`=?, `reserve_yn`=?, `group_order_yn`=?, `always_open_yn`=?, `reg_date`=NOW(), `open_date`=? WHERE `idx`=?',	
+		[g_truck_truckName, g_truck_phone, 0, 0, 0, photoIdx, g_truck_category_big, g_truck_category_small, g_truck_takeout_yn, g_truck_cansit_yn, g_truck_card_yn, g_truck_reserve_yn, g_truck_group_order_yn, g_truck_always_open_yn, g_truck_openDate, g_truck_idx],
 		function(err, result) {
 			if(err) {
 				res.end('{"code":122}');
