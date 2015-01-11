@@ -176,6 +176,13 @@ function assemble (res, req, client, result_open_history, result_buy_history, tr
 		result_open_history[i]['historyMenuCount'] = menuCntArr;
 	}
 
+	// 상세 판매 정보는 넘기지 않는다.
+	for(var i=0 ; i<result_open_history.length ; i++) {
+		delete result_open_history[i].history;
+	}
+
+	UTCtoLocal(result_open_history, 'start');
+	UTCtoLocal(result_open_history, 'end');
 	jsonStr = '{"code":700,"result":'+JSON.stringify(result_open_history)+'}';
 	res.end(jsonStr);
 	return;
