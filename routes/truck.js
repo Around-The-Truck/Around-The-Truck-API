@@ -144,7 +144,7 @@ exports.getTruckInfo = function(req, res){
 	}
 
 	client.query('use aroundthetruck');
-	client.query('select * from truck where idx='+truckIdx,
+	client.query('select idx, `name`, phone_num, gps_longitude, gps_latitude, gps_altitude, gps_address, todays_sum, start_yn, start_time, follow_count, (select filename from photo where idx=truck.photo_id) as photo_filename, main_position, category_id, category_small, takeout_yn, cansit_yn, card_yn, reserve_yn, group_order_yn, always_open_yn, reg_date, open_date from truck where idx='+truckIdx,
 		function(error, result, fields) {
 			if(error) {
 				console.log('there\'s error in query!!');

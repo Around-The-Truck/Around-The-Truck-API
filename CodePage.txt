@@ -88,3 +88,4 @@ calculate	7
 701	parameter undefined
 702	parameter 빈칸으로 넘어옴
 703	쿼리 에러: calculate select
+704	쿼리 에러: getMoreInfo select
