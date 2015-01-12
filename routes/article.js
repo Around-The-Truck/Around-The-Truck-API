@@ -67,7 +67,7 @@ exports.getArticleList = function(req, res) {
 
 	client.query('use aroundthetruck');
 	client.query('set names utf8');
-	client.query('select article.idx as idx, filename, writer, writer_type, contents, \"like\", belong_to, reg_date from aroundthetruck.article, aroundthetruck.photo where article.writer=? and article.writer_type=? and article.photo_idx=photo.idx order by idx desc',
+	client.query('select article.idx as idx, filename, writer, writer_type, contents, `like`, belong_to, reg_date from aroundthetruck.article, aroundthetruck.photo where article.writer=? and article.writer_type=? and article.photo_idx=photo.idx order by idx desc',
 		[writer, writer_type],
 		function(err, result, fields) {
 			if(err) {
