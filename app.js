@@ -91,7 +91,7 @@ app.get('/pay', routesPayment.pay);
 // TODO : 게시글 작성 (트럭만 가능)
 // TODO : 메뉴 등록
 // TODO : 손님 회원가입 다시짜기 (번호인증 포함)
-app.get('/getMenuList', routesTruck.getMenuList);
+app.post('/getMenuList', routesTruck.getMenuList);
 
 
 var server = http.createServer(app).listen(app.get('port'), function() {
