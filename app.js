@@ -51,6 +51,8 @@ app.get('/phoneOverlapCheck', routesJoin.phoneOverlapCheck);
 app.get('/getTruckList', routesTruck.getTruckList);
 // 한개 트럭 정보 불러오기
 app.get('/getTruckInfo', routesTruck.getTruckInfo);
+// 간단한 트럭 정보를 리턴.
+app.post('/getTruckShort', routesTruck.getTruckShort);
 // 장사 시작
 app.post('/truckStart', routesTruck.truckStart);
 // 장사 끝
