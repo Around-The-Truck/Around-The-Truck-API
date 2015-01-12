@@ -61,10 +61,10 @@ app.post('/upload', routesUpload.upload);
 app.get('/truckNumCheck', routesJoin.truckNumCheck);
 // 트럭 회원가입
 app.post('/truckJoin', routesJoin.truckJoin);
-// 한 개의 article 을 받아온다. (by idx) :TODO
-app.get('/getArticle', routesArticle.getArticle);
-// article 들을 받아온다. (by writer) :TODO
-app.get('/getArticleList', routesArticle.getArticleList);
+// 한 개의 article 을 받아온다. (by idx)
+app.post('/getArticle', routesArticle.getArticle);
+// article 들을 받아온다. (by writer)
+app.post('/getArticleList', routesArticle.getArticleList);
 // 특정 사용자의 follow list 를 받아온다.
 app.get('/getFollowList', routesHistory.getFollowList);
 // 게시글에 좋아요를 누른다 (사용자만 가능)
