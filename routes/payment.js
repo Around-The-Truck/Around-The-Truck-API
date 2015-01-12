@@ -112,6 +112,7 @@ function assemble (res, req, client, result_open_history, result_buy_history, tr
 		var age = Array(0,0,0,0,0,0,0,0,0,0);
 		var cntMale = 0;
 		var cntFemale = 0;
+		var paidSum = 0;
 
 		var menuIdxArr = Array();
 		var menuCntArr = Array();
@@ -132,6 +133,9 @@ function assemble (res, req, client, result_open_history, result_buy_history, tr
 				people.push(result_open_history[i]['history'][j]['customer_phone']);
 			}
 
+			// 총 매출 계산
+			paidSum += parseInt(result_open_history[i]['history'][j]['paid']);
+
 			// 메뉴 관련
 			idxof = menuNameArr.indexOf(result_open_history[i]['history'][j]['menu_name']);
 			if(idxof==-1) {
@@ -149,7 +153,8 @@ function assemble (res, req, client, result_open_history, result_buy_history, tr
 		result_open_history[i]['historyAge'] = age;
 		//push: 성별
 		result_open_history[i]['historyGender'] = [cntMale, cntFemale];
-		
+		//push: 총매출
+		result_open_history[i]['todays_sum'] = paidSum;
 		//sort: 메뉴
 		menuNameArr.sort(
 			function (a,b) {

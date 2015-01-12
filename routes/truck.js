@@ -642,3 +642,199 @@ exports.getMenuList = function(req, res){
 		}
 	);
 };
+
+exports.addMenuList = function(req, res){
+	res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
+	try
+	{
+		// json 으로 온 데이터를 파싱.
+		var raw = req.param('data');
+
+		if(raw==undefined) {
+			res.end('{"code":203}');
+			return;
+		}
+		if(raw.length==0) {
+			res.end('{"code":217}');
+			return;
+		}
+
+		try {
+			raw = JSON.parse(raw);
+		}
+		catch(e) {
+			res.end('{"code":218}');
+			return;
+		}
+		var menuData = raw;
+		var fileData = Array();
+
+		for(var i=0 ; i<menuData.length ; i++) {
+			console.log("file is "+eval("req.files.hello"+i+""));
+			/*
+			if(eval("req.files.hello"+i)==undefined) {
+				res.end("no file hello"+i+"!");
+				return;
+			}*/
+		}
+		return;
+		/*
+		[{"photoFieldName":"hello0", "name":"menu1"},{"photoFieldName":"hello1", "name":"menu2"},{"photoFieldName":"hello2", "name":"menu3"}]
+		*/
+		
+		console.log("files: "+req.files);
+		//console.log(req.files.length);
+		console.log("name: "+raw[0]['name']);
+		console.log("length: "+raw.length);
+		//console.log(req.files.[0].name);
+		res.end("aa");
+		return;
+
+		var profileImg = req.files.file;
+
+		// 텍스트 데이터
+		// 아예 없을때는 undefined 이고, ! 로 검출 가능.
+		// 빈칸일때는 undefined가 아니고, ! 로 검출 가능하고, length==0 으로 검출 가능.
+
+		// 파일
+		// 아예 없을때는 undefined 이고, ! 로 검출 가능.
+		// 빈칸일때는 undefined가 아니고, ! 로 검출 불가능하고, name의 length 로만 검출 가능.
+
+		// undefined check
+		if(idx==undefined || truckName==undefined || phone==undefined 
+			|| openDate==undefined || profileImg==undefined
+			|| category_big==undefined || category_small==undefined 
+			|| takeout_yn==undefined || cansit_yn==undefined || card_yn==undefined 
+			|| reserve_yn==undefined || group_order_yn==undefined || always_open_yn==undefined) {
+			res.end('{"code":117}');
+			return;
+		}
+
+		// 프로필 사진 체크
+		if(!profileImg.name) {
+			res.end('{"code":118}');
+			return;
+		}
+		
+		// 빈칸 정보 체크
+		//if(idx.length==0 || truckName.length==0 || phone.length==0 || openDate.length==0) {
+		if(idx.length==0 || truckName.length==0 || phone.length==0
+			|| openDate.length==0 || category_small.length==0 || category_big.length==0
+			|| takeout_yn.length==0 || cansit_yn.length==0 || card_yn.length==0
+			|| reserve_yn.length==0 || group_order_yn.length==0 || always_open_yn.length==0) {
+			res.end('{"code":119}');
+			return;
+		}
+
+		g_truck_idx = idx;
+		g_truck_truckName = truckName;
+		g_truck_phone = phone;
+		g_truck_openDate = openDate;
+		g_truck_file = profileImg;
+
+		g_truck_category_small = category_small;
+		g_truck_category_big = category_big;
+		g_truck_takeout_yn = takeout_yn;
+		g_truck_cansit_yn = cansit_yn;
+		g_truck_card_yn = card_yn;
+		g_truck_reserve_yn = reserve_yn;
+		g_truck_group_order_yn = group_order_yn;
+		g_truck_always_open_yn = always_open_yn;
+
+		// db 에서 찾기
+		var client = mysql.createConnection({
+			host: g_host,
+			user: g_user,
+			password: g_pw
+		});
+		client.query('use aroundthetruck');
+		client.query('set names utf8');
+		client.query('select name from truck where idx=?',
+			[idx],
+			function(error, result, fields) {
+				if(error) {
+					res.end('{"code":113}');
+					return;
+				}
+				else {
+					if(result.length==0 || result.length>1) {
+						res.end('{"code":114}');
+						return;
+					}
+					else if(result.length==1 && result[0]['name']!=null) {
+						res.end('{"code":115}');
+						return;
+					}
+					else if(result.length==1 && result[0]['name']==null) {
+						uploadImage(client, res);
+					}
+					else {
+						res.end('{"code":116}');
+						return;
+					}
+				}
+		});
+	}
+	catch (err)	{	console.log(err);	}
+};
+
+var uploadImagetodo = function(client, res) {
+	// 파일 업로드
+	var fileName = g_truck_file.name;
+	fs.readFile(g_truck_file.path, function (err, data) {
+        
+
+        if(!fileName){
+            res.end('{"code":118}');
+            return ;
+        }
+        else {
+        	var path = __dirname + "/../public/upload/";
+
+            while(fs.existsSync(path+fileName))
+            	fileName = "_" + fileName;
+
+            fs.writeFile(path+fileName, data, function (err) {
+            	if(err) {
+            		res.end('{"code":120}');
+            		return;
+            	}
+                
+            });
+        }
+    });
+    insertRowImage(client, res, fileName);
+	//insertRowTruck(client, res, fileName);
+};
+
+var insertRowImagetodo = function(client, res, fileName) {
+	client.query('insert into photo (`publisher`, `publisher_type`, `filename`) values (?,?,?)',
+		[g_truck_idx, 1, fileName],
+		function(error, result) {
+			if(error) {
+				res.end('{"code":121}');
+				// TODO: 파일 지우기 : removeFile(fileName)
+				return;
+			}
+			else {
+				insertRowTruck(client, res, result.insertId);
+			}
+		}
+	);
+}
+
+var insertRowTrucktodo = function(client, res, photoIdx) {
+	client.query('UPDATE `aroundthetruck`.`truck` SET `name`=?, `phone_num`=?, `todays_sum`=?, `start_yn`=?, `follow_count`=?, `photo_id`=?, `category_id`=?, `category_small`=?, `takeout_yn`=?, `cansit_yn`=?, `card_yn`=?, `reserve_yn`=?, `group_order_yn`=?, `always_open_yn`=?, `reg_date`=NOW(), `open_date`=? WHERE `idx`=?',	
+		[g_truck_truckName, g_truck_phone, 0, 0, 0, photoIdx, g_truck_category_big, g_truck_category_small, g_truck_takeout_yn, g_truck_cansit_yn, g_truck_card_yn, g_truck_reserve_yn, g_truck_group_order_yn, g_truck_always_open_yn, g_truck_openDate, g_truck_idx],
+		function(err, result) {
+			if(err) {
+				res.end('{"code":122}');
+				return;
+			}
+			else {
+				res.end('{"code":123}');
+				return;
+			}
+		}
+	);
+};
