@@ -605,3 +605,40 @@ function unfollowTruckDelete(req, res, client, truckIdx, phoneNum) {
 		}
 	);
 }
+
+exports.getMenuList = function(req, res){
+	res.writeHead(200, {'Content-Type': 'application/json;charset=utf-8'});
+
+	// mysql 접속
+	var client = mysql.createConnection({
+		host: '165.194.35.161',
+		user: 'food',
+		password: 'truck'
+	});
+
+	// json 으로 온 데이터를 파싱.
+	// post 로 변경될 때 여기 body 로 변경할 것!
+	truckIdx = req.param('truckIdx');
+
+	if(truckIdx==null) {
+		jsonStr = '{"code":203}';
+		res.end(jsonStr);
+		return;
+	}
+
+	client.query('use aroundthetruck');
+	client.query('SELECT idx, name, price, truck_idx, (select photo.filename from photo where photo.idx=menu.photo_idx) as photo_filename, description, ingredients FROM menu where truck_idx=?',
+		[truckIdx],
+		function(error, result, fields) {
+			if(error) {
+				res.end('{"code":215}');
+				return;
+			}
+			else {
+				jsonStr = '{"code":200,"result":'+JSON.stringify(result)+'}';
+				res.end(jsonStr);
+
+			}
+		}
+	);
+};
