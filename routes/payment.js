@@ -72,7 +72,7 @@ function getMoreInfo (res, req, client, result_open_history, truckIdx) {
 		return;
 	}
 
-	client.query('select idx, group_idx, menu_idx, (select name from menu where idx=buy_history.menu_idx) as menu_name, price as paid, customer_phone, (select age from customer where phone=buy_history.customer_phone) as customer_age, (select gender from customer where phone=buy_history.customer_phone) as customer_gender, reg_date from buy_history where truck_idx=?',
+	client.query('select idx, group_idx, menu_idx, (select name from menu where idx=buy_history.menu_idx) as menu_name, price as paid, customer_phone, (select age from customer where phone=buy_history.customer_phone) as customer_age, (select gender from customer where phone=buy_history.customer_phone) as customer_gender, card_yn, reg_date from buy_history where truck_idx=?',
 		[truckIdx],
 		function (error, result_buy_history, fields) {
 			if (error) {
@@ -103,22 +103,44 @@ function assemble (res, req, client, result_open_history, result_buy_history, tr
 			}
 		}
 	}
-	// 정산 사항들 계산
-	//open_history: truckIdx, start, end, todays_sum
-	//buy_history: idx, group_idx, menu_idx, menu_name, paid, 
-	// 				customer_phone, customer_age, customer_gender, reg_date
+	// 정산할 사항들을 계산합니다
 	for(var i=0 ; i<result_open_history.length ; i++) {
 		var people = Array();
 		var age = Array(0,0,0,0,0,0,0,0,0,0);
 		var cntMale = 0;
 		var cntFemale = 0;
+		var cntCard = 0;
+		var cntCash = 0;
 		var paidSum = 0;
 
 		var menuIdxArr = Array();
 		var menuCntArr = Array();
 		var menuNameArr = Array();
 
+		// 시간대별 그래프 관련
+		var graphLength = 5;
+		var timeStart = result_open_history[i]['start'];
+		var timeEnd = result_open_history[i]['end'];
+		var timeDiff = Math.abs((timeEnd.getTime() - timeStart.getTime()) / graphLength);
+		var timeSeperator = Array(graphLength);
+		var timeCnt = Array(graphLength);
+		for(var m=0 ; m<graphLength ; m++)	timeCnt[m] = 0;
+
+		console.log("start: "+timeStart);
+		for(var k=0 ; k<graphLength ; k++) {
+			timeSeperator[k] = new Date(result_open_history[i]['start'].getTime() + (timeDiff * k));
+			console.log("  timeSep["+k+"]: "+timeSeperator[k]);
+		}
+		console.log("end  : "+timeEnd);
+
 		for(var j=0 ; j<result_open_history[i]['history'].length ; j++) {
+			// 시간대별 집계
+			for(var l=0 ; l<graphLength ; l++) {
+				if(result_open_history[i]['history'][j]['reg_date']>=timeSeperator[l] && result_open_history[i]['history'][j]['reg_date']<timeSeperator[l+1]) {
+					timeCnt[l] = (timeCnt[l]==undefined)? 1 : timeCnt[l]+1;
+					break;
+				}
+			}
 			// 성별
 			if(result_open_history[i]['history'][j]['customer_gender']==1)
 				cntMale++;
@@ -135,6 +157,10 @@ function assemble (res, req, client, result_open_history, result_buy_history, tr
 
 			// 총 매출 계산
 			paidSum += parseInt(result_open_history[i]['history'][j]['paid']);
+
+			// 카드, 현금 계산
+			if(parseInt(result_open_history[i]['history'][j]['paid'])==0)	cntCash++;
+			else	cntCard++;
 
 			// 메뉴 관련
 			idxof = menuNameArr.indexOf(result_open_history[i]['history'][j]['menu_name']);
@@ -155,6 +181,8 @@ function assemble (res, req, client, result_open_history, result_buy_history, tr
 		result_open_history[i]['historyGender'] = [cntMale, cntFemale];
 		//push: 총매출
 		result_open_history[i]['todays_sum'] = paidSum;
+		//push: 카드or현금
+		result_open_history[i]['historyCardCash'] = [cntCard, cntCash];
 		//sort: 메뉴
 		menuNameArr.sort(
 			function (a,b) {
@@ -179,6 +207,10 @@ function assemble (res, req, client, result_open_history, result_buy_history, tr
 		result_open_history[i]['historyMenuName'] = menuNameArr;
 		result_open_history[i]['historyMenuIdx'] = menuIdxArr;
 		result_open_history[i]['historyMenuCount'] = menuCntArr;
+		//push: 시간대별 그래프 관련
+		result_open_history[i]['timeSeperator'] = timeSeperator;
+		result_open_history[i]['timeSeperator'] = UTCtoLocalSep (result_open_history[i]['timeSeperator']);
+		result_open_history[i]['timeCnt'] = timeCnt;
 	}
 
 	// 상세 판매 정보는 넘기지 않는다.
@@ -206,6 +238,23 @@ function UTCtoLocal (str, fieldName) {
 		res += (((d.getSeconds())<10)?"0"+(d.getSeconds()):(d.getSeconds()))+"";	
 
 		str[i][fieldName] = res;
+	}
+	return str;
+}
+
+function UTCtoLocalSep (str) {
+	for(var i=0 ; i<str.length ; i++) {
+		var res = "";
+		var d = new Date(str[i]);
+
+		res += d.getFullYear()+"-";
+		res += (((d.getMonth()+1)<10)?"0"+(d.getMonth()+1):(d.getMonth()+1))+"-";
+		res += (((d.getDate())<10)?"0"+(d.getDate()):(d.getDate()))+" ";
+		res += (((d.getHours())<10)?"0"+(d.getHours()):(d.getHours()))+":";
+		res += (((d.getMinutes())<10)?"0"+(d.getMinutes()):(d.getMinutes()))+":";
+		res += (((d.getSeconds())<10)?"0"+(d.getSeconds()):(d.getSeconds()))+"";	
+
+		str[i] = res;
 	}
 	return str;
 }
