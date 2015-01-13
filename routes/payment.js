@@ -72,7 +72,7 @@ function getMoreInfo (res, req, client, result_open_history, truckIdx) {
 		return;
 	}
 
-	client.query('select idx, group_idx, menu_idx, (select name from menu where idx=buy_history.menu_idx) as menu_name, price as paid, customer_phone, (select age from customer where phone=buy_history.customer_phone) as customer_age, (select gender from customer where phone=buy_history.customer_phone) as customer_gender, card_yn, reg_date from buy_history where truck_idx=?',
+	client.query('select idx, group_idx, menu_idx, (select name from menu where idx=buy_history.menu_idx) as menu_name, price as paid, customer_phone, (select age from customer where phone=buy_history.customer_phone) as customer_age, (select gender from customer where phone=buy_history.customer_phone) as customer_gender, cash_card_point, reg_date from buy_history where truck_idx=?',
 		[truckIdx],
 		function (error, result_buy_history, fields) {
 			if (error) {
@@ -111,7 +111,9 @@ function assemble (res, req, client, result_open_history, result_buy_history, tr
 		var cntFemale = 0;
 		var cntCard = 0;
 		var cntCash = 0;
+		var cntPoint = 0;
 		var paidSum = 0;
+		var pointUse = 0;
 
 		var menuIdxArr = Array();
 		var menuCntArr = Array();
@@ -142,10 +144,7 @@ function assemble (res, req, client, result_open_history, result_buy_history, tr
 				}
 			}
 			// 성별
-			if(result_open_history[i]['history'][j]['customer_gender']==1)
-				cntMale++;
-			else
-				cntFemale++;
+			(result_open_history[i]['history'][j]['customer_gender']==1)? cntMale++ : cntFemale++;
 
 			// 연령대
 			age[parseInt(result_open_history[i]['history'][j]['customer_age']/10,10)]++;
@@ -158,9 +157,14 @@ function assemble (res, req, client, result_open_history, result_buy_history, tr
 			// 총 매출 계산
 			paidSum += parseInt(result_open_history[i]['history'][j]['paid']);
 
-			// 카드, 현금 계산
-			if(parseInt(result_open_history[i]['history'][j]['paid'])==0)	cntCash++;
-			else	cntCard++;
+			// 카드, 현금, 포인트 계산 (포인트 집계도 같이 이루어진다.... else 에서)
+			var ccp = parseInt(result_open_history[i]['history'][j]['cash_card_point']);
+			if(parseInt(ccp==0)	cntCash++;
+			else if(parseInt(ccp==1)	cntCard++;
+			else {
+				cntPoint++;
+				pointUse += parseInt(result_open_history[i]['history'][j]['price']);
+			}
 
 			// 메뉴 관련
 			idxof = menuNameArr.indexOf(result_open_history[i]['history'][j]['menu_name']);
@@ -181,8 +185,10 @@ function assemble (res, req, client, result_open_history, result_buy_history, tr
 		result_open_history[i]['historyGender'] = [cntMale, cntFemale];
 		//push: 총매출
 		result_open_history[i]['todays_sum'] = paidSum;
-		//push: 카드or현금
-		result_open_history[i]['historyCardCash'] = [cntCard, cntCash];
+		//push: 카드 or 현금 or 포인트
+		result_open_history[i]['historyCardCashPoint'] = [cntCard, cntCash, cntPoint];
+		//push: 포인트 획득, 사용 (획득은 추후에 계산됨)
+		result_open_history[i]['pointGetUse'] = [0, pointUse];
 		//sort: 메뉴
 		menuNameArr.sort(
 			function (a,b) {
