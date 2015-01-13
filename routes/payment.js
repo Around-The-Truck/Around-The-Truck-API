@@ -148,7 +148,7 @@ function assemble (res, req, client, result_open_history, result_buy_history, tr
 			}
 		}
 		//push: 1인당 평균 매출 
-		result_open_history[i]['salesPerPerson'] = result_open_history[i]['todays_sum']/people.length;
+		result_open_history[i]['salesPerPerson'] = (paidSum==0)? 0 : paidSum/people.length;
 		//push: 연령별
 		result_open_history[i]['historyAge'] = age;
 		//push: 성별
