@@ -128,12 +128,12 @@ function assemble (res, req, client, result_open_history, result_buy_history, tr
 		var timeCnt = Array(graphLength);
 		for(var m=0 ; m<graphLength ; m++)	timeCnt[m] = 0;
 
-		console.log("start: "+timeStart);
+		//console.log("start: "+timeStart);
 		for(var k=0 ; k<graphLength ; k++) {
 			timeSeperator[k] = new Date(result_open_history[i]['start'].getTime() + (timeDiff * k));
-			console.log("  timeSep["+k+"]: "+timeSeperator[k]);
+			//console.log("  timeSep["+k+"]: "+timeSeperator[k]);
 		}
-		console.log("end  : "+timeEnd);
+		//console.log("end  : "+timeEnd);
 
 		for(var j=0 ; j<result_open_history[i]['history'].length ; j++) {
 			// 시간대별 집계
