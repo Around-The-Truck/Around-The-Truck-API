@@ -159,8 +159,8 @@ function assemble (res, req, client, result_open_history, result_buy_history, tr
 
 			// 카드, 현금, 포인트 계산 (포인트 집계도 같이 이루어진다.... else 에서)
 			var ccp = parseInt(result_open_history[i]['history'][j]['cash_card_point']);
-			if(parseInt(ccp==0)	cntCash++;
-			else if(parseInt(ccp==1)	cntCard++;
+			if(ccp==0)	cntCash++;
+			else if(ccp==1)	cntCard++;
 			else {
 				cntPoint++;
 				pointUse += parseInt(result_open_history[i]['history'][j]['price']);
