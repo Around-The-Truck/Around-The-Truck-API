@@ -27,7 +27,7 @@ exports.getFollowList = function (req, res) {
 
 	client.query('set names utf8');
 	client.query('use aroundthetruck');
-	client.query('select * from truck where customer=?',
+	client.query('select * from follow_list where customer=?',
 		[phoneNum],
 		function(error, result, fields) {
 			if(error) {
