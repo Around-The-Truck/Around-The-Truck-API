@@ -27,7 +27,7 @@ exports.getFollowList = function (req, res) {
 
 	client.query('set names utf8');
 	client.query('use aroundthetruck');
-	client.query('select truck.idx, truck.name, truck.category_id, truck.category_small, truck.follow_count, (select filename from photo where photo.idx=truck.photo_id) as filename from follow_list, truck where tidx=truck.idx and customer=?',
+	client.query('select truck.idx, truck.name, (select cat_name from category where category.idx=truck.category_id) as cat_name_big, (select cat_name from category where category.idx=truck.category_small) as cat_name_small, truck.follow_count, (select filename from photo where photo.idx=truck.photo_id) as filename from follow_list, truck where tidx=truck.idx and customer=?',
 		[phoneNum],
 		function(error, result, fields) {
 			if(error) {
