@@ -23,7 +23,7 @@ exports.getFollowList = function (req, res) {
 	else if(phoneNum.length==0) {
 		res.end('{"code":402}');
 		return;
-	}뀨잉
+	}
 
 	client.query('set names utf8');
 	client.query('use aroundthetruck');
