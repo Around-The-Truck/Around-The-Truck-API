@@ -1,4 +1,4 @@
-
+var fs = require('fs');
 var mysql = require('mysql');
 
 
@@ -627,7 +627,7 @@ exports.getMenuList = function(req, res){
 	}
 
 	client.query('use aroundthetruck');
-	client.query('SELECT idx, name, price, truck_idx, (select photo.filename from photo where photo.idx=menu.photo_idx) as photo_filename, description, ingredients FROM menu where truck_idx=?',
+	client.query('SELECT idx, name, price, truck_idx, (select name from truck where truck.idx=menu.truck_idx) as truck_name, (select photo.filename from photo where photo.idx=menu.photo_idx) as photo_filename, description, ingredients FROM menu where truck_idx=?',
 		[truckIdx],
 		function(error, result, fields) {
 			if(error) {
@@ -672,12 +672,18 @@ exports.addMenuList = function(req, res){
 		var menuData = raw;
 
 		for(var i=0 ; i<menuData.length ; i++) {
-
+			if(menuData[i]['name']==undefined || menuData[i]['price']==undefined) {
+				res.end('{"code":220}');
+				return;
+			}
+			else if(menuData[i]['name'].length==0 || menuData[i]['price'].length==0) {
+				res.end('{"code":221}');
+				return;	
+			}
 		}
-		
+
 		var fileData = Array();
 
-		ㅑㄹ
 		
 		for(var i=0 ; i<menuData.length ; i++) {
 			if(eval("req.files.file"+i)==undefined) {
@@ -689,104 +695,22 @@ exports.addMenuList = function(req, res){
 		/*
 		[{"photoFieldName":"file0", "name":"menu1"},{"photoFieldName":"file1", "name":"menu2"}]
 		*/
-		
-		//console.log(req.files.length);
-		console.log("name: "+raw[0]['name']);
-		console.log("length: "+raw.length);
-		//console.log(req.files.[0].name);
-		res.end("aa");
+		uploadImage(client, res, fileData, menuData);
 		return;
-
-		var profileImg = req.files.file;
-
-		// 텍스트 데이터
-		// 아예 없을때는 undefined 이고, ! 로 검출 가능.
-		// 빈칸일때는 undefined가 아니고, ! 로 검출 가능하고, length==0 으로 검출 가능.
-
-		// 파일
-		// 아예 없을때는 undefined 이고, ! 로 검출 가능.
-		// 빈칸일때는 undefined가 아니고, ! 로 검출 불가능하고, name의 length 로만 검출 가능.
-
-		// undefined check
-		if(idx==undefined || truckName==undefined || phone==undefined 
-			|| openDate==undefined || profileImg==undefined
-			|| category_big==undefined || category_small==undefined 
-			|| takeout_yn==undefined || cansit_yn==undefined || card_yn==undefined 
-			|| reserve_yn==undefined || group_order_yn==undefined || always_open_yn==undefined) {
-			res.end('{"code":117}');
-			return;
-		}
-
-		// 프로필 사진 체크
-		if(!profileImg.name) {
-			res.end('{"code":118}');
-			return;
-		}
-		
-		// 빈칸 정보 체크
-		//if(idx.length==0 || truckName.length==0 || phone.length==0 || openDate.length==0) {
-		if(idx.length==0 || truckName.length==0 || phone.length==0
-			|| openDate.length==0 || category_small.length==0 || category_big.length==0
-			|| takeout_yn.length==0 || cansit_yn.length==0 || card_yn.length==0
-			|| reserve_yn.length==0 || group_order_yn.length==0 || always_open_yn.length==0) {
-			res.end('{"code":119}');
-			return;
-		}
-
-		g_truck_idx = idx;
-		g_truck_truckName = truckName;
-		g_truck_phone = phone;
-		g_truck_openDate = openDate;
-		g_truck_file = profileImg;
-
-		g_truck_category_small = category_small;
-		g_truck_category_big = category_big;
-		g_truck_takeout_yn = takeout_yn;
-		g_truck_cansit_yn = cansit_yn;
-		g_truck_card_yn = card_yn;
-		g_truck_reserve_yn = reserve_yn;
-		g_truck_group_order_yn = group_order_yn;
-		g_truck_always_open_yn = always_open_yn;
-
-		// db 에서 찾기
-		var client = mysql.createConnection({
-			host: g_host,
-			user: g_user,
-			password: g_pw
-		});
-		client.query('use aroundthetruck');
-		client.query('set names utf8');
-		client.query('select name from truck where idx=?',
-			[idx],
-			function(error, result, fields) {
-				if(error) {
-					res.end('{"code":113}');
-					return;
-				}
-				else {
-					if(result.length==0 || result.length>1) {
-						res.end('{"code":114}');
-						return;
-					}
-					else if(result.length==1 && result[0]['name']!=null) {
-						res.end('{"code":115}');
-						return;
-					}
-					else if(result.length==1 && result[0]['name']==null) {
-						uploadImage(client, res);
-					}
-					else {
-						res.end('{"code":116}');
-						return;
-					}
-				}
-		});
 	}
 	catch (err)	{	console.log(err);	}
 };
 
-var uploadImagetodo = function(client, res) {
+var uploadImage = function(client, res, fileData, menuData) {
 	// 파일 업로드
+
+	var data = fs.readFileSync(fileData[0])
+	console.log(data);
+	res.end("read!");
+	return;
+
+
+	///////////////////////////////
 	var fileName = g_truck_file.name;
 	fs.readFile(g_truck_file.path, function (err, data) {
         
