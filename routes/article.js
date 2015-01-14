@@ -48,13 +48,13 @@ exports.getArticleList = function(req, res) {
 	res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
 
 	writer = req.param('writer');
-	writer_type = req.param('writer_type');
+	//writer_type = req.param('writer_type');
 
-	if(writer==undefined || writer_type==undefined) {
+	if(writer==undefined/* || writer_type==undefined*/) {
 		res.end('{"code":304}');
 		return;
 	}
-	else if(writer.length==0 || writer_type.length==0) {
+	else if(writer.length==0/* || writer_type.length==0*/) {
 		res.end('{"code":305}');
 		return;
 	}
@@ -65,10 +65,12 @@ exports.getArticleList = function(req, res) {
 		password: g_pw
 	});
 
+	// 여기서, 글쓴이는 무조건 트럭이라고 가정.
+	// 손님 글쓰기를 고려한다면 서브 쿼리가 바뀌어야함!
 	client.query('use aroundthetruck');
 	client.query('set names utf8');
-	client.query('select article.idx as idx, filename, writer, writer_type, contents, `like`, belong_to, reg_date from aroundthetruck.article, aroundthetruck.photo where article.writer=? and article.writer_type=? and article.photo_idx=photo.idx order by idx desc',
-		[writer, writer_type],
+	client.query('select article.idx as idx, filename, (select filename from photo where idx=(select photo_id from truck where truck.idx=?)) as writer_filename, writer, writer_type, contents, `like`, belong_to, reg_date from aroundthetruck.article, aroundthetruck.photo where article.writer=? and article.writer_type=? and article.photo_idx=photo.idx order by idx desc',
+		[writer, writer, 1],
 		function(err, result, fields) {
 			if(err) {
 				res.end('{"code":303}');

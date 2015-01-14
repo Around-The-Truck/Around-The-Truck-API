@@ -644,10 +644,12 @@ exports.getMenuList = function(req, res){
 };
 
 exports.addMenuList = function(req, res){
-	res.writeHead(200, {'Content-Type':'text/html;charset=utf-8'});
+	res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
 	try
 	{
 		var raw = req.param('data');
+		// data 에는
+		// name, price, description, ingredients 가 들어가야됨.
 		var truckIdx = req.param('truckIdx');
 
 		if(raw==undefined || truckIdx==undefined) {
@@ -668,31 +670,26 @@ exports.addMenuList = function(req, res){
 		}
 
 		var menuData = raw;
-		var fileData = Array();
-		try {
-			console.log("files: "+req.files);
-		}
-		catch(ee) {
-			res.end(ee);
-			return;
-		}
-		
+
 		for(var i=0 ; i<menuData.length ; i++) {
 
-			console.log("file is "+eval("req.files.file"+i+""));
+		}
+		
+		var fileData = Array();
 
+		ㅑㄹ
+		
+		for(var i=0 ; i<menuData.length ; i++) {
 			if(eval("req.files.file"+i)==undefined) {
-				res.end("no file file"+i+"!");
+				res.end('{"code":219}');
 				return;
 			}
+			fileData.push(eval("req.files.file"+i));
 		}
-		res.end("goodjob");
-		return;
 		/*
 		[{"photoFieldName":"file0", "name":"menu1"},{"photoFieldName":"file1", "name":"menu2"}]
 		*/
 		
-		console.log("files: "+req.files);
 		//console.log(req.files.length);
 		console.log("name: "+raw[0]['name']);
 		console.log("length: "+raw.length);
