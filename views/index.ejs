@@ -14,19 +14,13 @@
 	<input type='submit' value='wow'>
     </form>
 
-    <br>회원가입<br>
-    <form method='post' action='/join'>
-	email<input type='text' name='email' ><br>
-	pw<input type='password' name='pw' ><br>
-	nickname<input type='text' name='nick' ><br>
-	age<input type='text' name='age' ><br>
-	<input type='submit'>
-    </form>
-
-    <br>비번찾기<br>
-    <form method='post' action='/findpw'>
-	email<input type='text' name='email' ><br>
-	<input type='submit'>
+    <br>메뉴 추가<br>
+    <form method='post' action='/addMenuList'>
+      truckIdx <input type='text' name='truckIdx'/><br>
+      data <input type='text' name='data'/><br>
+      file0 <input type='file' name='file0'/><br>
+      file1 <input type='file' name='file1'/><br>
+      <input type='submit' value='submit'>
     </form>
   </body>
 </html>

@@ -15,8 +15,6 @@ var path = require('path');
 
 var app = express();
 
-var hellowow = "aaabbbccc";
-
 // all environments
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
@@ -40,9 +38,6 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 
-// 메인 페이지에서 나의 정보가져오기
-//app.get('/getMyProfile', routesMain.getMyProfile);
-//app.get('/logout', routesMain.logoutRequest);
 
 // 손님 회원가입
 app.get('/join', routesJoin.join);

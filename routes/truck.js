@@ -644,21 +644,21 @@ exports.getMenuList = function(req, res){
 };
 
 exports.addMenuList = function(req, res){
-	res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
+	res.writeHead(200, {'Content-Type':'text/html;charset=utf-8'});
 	try
 	{
-		// json 으로 온 데이터를 파싱.
 		var raw = req.param('data');
+		var truckIdx = req.param('truckIdx');
 
-		if(raw==undefined) {
+		if(raw==undefined || truckIdx==undefined) {
 			res.end('{"code":203}');
 			return;
 		}
-		if(raw.length==0) {
+		if(raw.length==0 || truckIdx.length==0) {
 			res.end('{"code":217}');
 			return;
 		}
-
+		// json 으로 파싱.
 		try {
 			raw = JSON.parse(raw);
 		}
@@ -666,20 +666,30 @@ exports.addMenuList = function(req, res){
 			res.end('{"code":218}');
 			return;
 		}
+
 		var menuData = raw;
 		var fileData = Array();
-
-		for(var i=0 ; i<menuData.length ; i++) {
-			console.log("file is "+eval("req.files.hello"+i+""));
-			/*
-			if(eval("req.files.hello"+i)==undefined) {
-				res.end("no file hello"+i+"!");
-				return;
-			}*/
+		try {
+			console.log("files: "+req.files);
 		}
+		catch(ee) {
+			res.end(ee);
+			return;
+		}
+		
+		for(var i=0 ; i<menuData.length ; i++) {
+
+			console.log("file is "+eval("req.files.file"+i+""));
+
+			if(eval("req.files.file"+i)==undefined) {
+				res.end("no file file"+i+"!");
+				return;
+			}
+		}
+		res.end("goodjob");
 		return;
 		/*
-		[{"photoFieldName":"hello0", "name":"menu1"},{"photoFieldName":"hello1", "name":"menu2"},{"photoFieldName":"hello2", "name":"menu3"}]
+		[{"photoFieldName":"file0", "name":"menu1"},{"photoFieldName":"file1", "name":"menu2"}]
 		*/
 		
 		console.log("files: "+req.files);
