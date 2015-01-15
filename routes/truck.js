@@ -786,7 +786,7 @@ function getPhotoIdxes (client, res, fileName, menuData, truckIdx) {
 	queryStr = queryStr.substring(0, queryStr.length-1);
 	queryStr += ")";
 
-	client.query('query',
+	client.query(queryStr,
 		function(error, result, fields) {
 			if(error) {
 				res.end('{"code":227}');
@@ -813,37 +813,21 @@ function getPhotoIdxes (client, res, fileName, menuData, truckIdx) {
 
 var insertRowMenu = function(client, res, fileName, fileIdx, menuData, truckIdx) {
 	//insert into menu (`name`, `price`, `truck_idx`, `photo_idx`, `description`, `ingredients`) values ('aaa','123','5','12','asdf','qwer'),('aaa','123','5','12','asdf','qwer');
-	var queryStr = "insert into menu (`name`, `price`, `truck_idx`, `photo_idx`, `description`, `ingredients`) values ('aaa','123','5','12','asdf','qwer'),('aaa','123','5','12','asdf','qwer')";
+	var queryStr = "insert into menu (`name`, `price`, `truck_idx`, `photo_idx`, `description`, `ingredients`) values ";
 	for(var i=0 ; i<fileName.length ; i++) {
-		queryStr += "('"+truckIdx+"', "+1+", '"+fileName[i]+"'),";
+		queryStr += "('"+menuData[i]['name']+"', '"+menuData[i]['price']+"', '"+truckIdx+"', '"+fileIdx[i]+"', '"+menuData[i]['description']+"', '"+menuData[i]['ingredients']+"'),";
 	}
 	queryStr = queryStr.substring(0, queryStr.length-1);
-
 	client.query('use aroundthetruck');
 	client.query('set names utf8');
 	client.query(queryStr,
 		function(error, result) {
 			if(error) {
-				res.end('{"code":226}');
-				// TODO: 파일 지우기 : removeFile(fileName)
+				res.end('{"code":229}');
 				return;
 			}
 			else {
-				getPhotoIdxes(client, res, fileName, menuData, truckIdx);
-				return;
-			}
-		}
-	);
-	//////////////////////////////////////
-	client.query('UPDATE `aroundthetruck`.`truck` SET `name`=?, `phone_num`=?, `todays_sum`=?, `start_yn`=?, `follow_count`=?, `photo_id`=?, `category_id`=?, `category_small`=?, `takeout_yn`=?, `cansit_yn`=?, `card_yn`=?, `reserve_yn`=?, `group_order_yn`=?, `always_open_yn`=?, `reg_date`=NOW(), `open_date`=? WHERE `idx`=?',	
-		[g_truck_truckName, g_truck_phone, 0, 0, 0, photoIdx, g_truck_category_big, g_truck_category_small, g_truck_takeout_yn, g_truck_cansit_yn, g_truck_card_yn, g_truck_reserve_yn, g_truck_group_order_yn, g_truck_always_open_yn, g_truck_openDate, g_truck_idx],
-		function(err, result) {
-			if(err) {
-				res.end('{"code":122}');
-				return;
-			}
-			else {
-				res.end('{"code":123}');
+				res.end('{"code":230}');
 				return;
 			}
 		}

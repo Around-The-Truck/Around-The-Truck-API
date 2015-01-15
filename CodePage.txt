@@ -58,6 +58,8 @@ truck	2
 226	쿼리 에러! (insertRowImage)
 227	쿼리 에러! (getPhotoIndexes)
 228	photo 테이블로부터 인덱스를 제대로 못받아왔다
+229	insert 쿼리 실패
+230	메뉴 insert 성공
 
 article	3
 300	정상적으로 받아옴
