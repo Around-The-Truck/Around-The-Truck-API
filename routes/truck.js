@@ -11,6 +11,7 @@ var latitude = null;
 var addrStr = null;
 var truckName = null;
 
+var locationCategory= [{"key":"  신천, 잠실", "value":["신천,","잠실","송파"]}, {"key":"  강남, 양재", "value":["서초","강남","양재"]}, {"key":"  신사, 압구정", "value":["강남","신사","압구정"]}, {"key":"  신촌, 이대, 홍대", "value":["마포","서대문","신촌","이대","홍대","합정","공덕","홍대"]}, {"key":"  이태원", "value":["용산","이태원","경리단"]}, {"key":"  건대", "value":["건대","건국대학교","광진"]}, {"key":"  종로, 명동", "value":["중구","명동","종로","충무로","종각","충정로","을지로"]}];
 
 exports.getTruckList = function(req, res){
 	res.writeHead(200, {'Content-Type': 'application/json;charset=utf-8'});
@@ -79,9 +80,28 @@ function returnTrucks (res, client) {
 		// 2. 위치 검색을 한 경우
 			// address 에 contain 되는지 확인한 후 해당 트럭들을 return 한다.
 		if(addrStr != null) {
-			for(var i=0 ; i<tt.length ; i++) {
-				if(tt[i]['gps_address'].indexOf(addrStr) > -1)	retVal.push(tt[i]);
+			// 지역 대분류 찾기
+			var idxBig = -1;
+			for(var i=0 ; i<locationCategory.length ; i++) {
+				if(locationCategory[i]['key']==addrStr) {
+					idxBig = i;
+					break;
+				}
 			}
+			// 대분류를 못찾았다...
+			if(idxBig==-1) {
+				res.end('{"code":231}');
+				return;
+			}
+			// 모튼 트럭 리스트에서 ...
+			for(var i=0 ; i<tt.length ; i++) {
+				// 선택된 지역 대분류의 소분류가 들어간 트럭을 선택한다.... 말이 너무 어렵나요? ㅋㅋ
+				for(var j=0 ; j<locationCategory[idxBig]['value'].length ; j++) {
+					if(tt[i]['gps_address'].indexOf(locationCategory[idxBig]['value'][j]) > -1)
+						retVal.push(tt[i]);
+				}
+			}
+
 			for(var i=0 ; i<retVal.length ; i++) {
 				retVal.sort(function(a,b){return a['distFromUser']-b['distFromUser']});
 			}
@@ -98,8 +118,27 @@ function returnTrucks (res, client) {
 	else {
 		// 4. gps 없이 위치만 받은 경우
 		if(addrStr != null) {
+			// 지역 대분류 찾기
+			var idxBig = -1;
+			console.log('addrStr: '+addrStr);
+			for(var i=0 ; i<locationCategory.length ; i++) {
+				if(locationCategory[i]['key']==addrStr) {
+					idxBig = i;
+					break;
+				}
+			}
+			// 대분류를 못찾았다...
+			if(idxBig==-1) {
+				res.end('{"code":231}');
+				return;
+			}
+			// 모튼 트럭 리스트에서 ...
 			for(var i=0 ; i<tt.length ; i++) {
-				if(tt[i]['gps_address'].indexOf(addrStr) > -1)	retVal.push(tt[i]);
+				// 선택된 지역 대분류의 소분류가 들어간 트럭을 선택한다.... 말이 너무 어렵나요? ㅋㅋ
+				for(var j=0 ; j<locationCategory[idxBig]['value'].length ; j++) {
+					if(tt[i]['gps_address'].indexOf(locationCategory[idxBig]['value'][j]) > -1)
+						retVal.push(tt[i]);
+				}
 			}
 		}
 		// 5. 아무것도 안넘겼다 - 전부 다 보내기
