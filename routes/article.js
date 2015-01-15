@@ -47,7 +47,7 @@ exports.getArticle = function(req, res) {
 exports.getArticleList = function(req, res) {
 	res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
 
-	writer = req.param('writer');
+	var writer = req.param('writer');
 	//writer_type = req.param('writer_type');
 
 	if(writer==undefined/* || writer_type==undefined*/) {
@@ -77,6 +77,7 @@ exports.getArticleList = function(req, res) {
 				return;
 			}
 			else {
+				getReplies()
 				result = UTCtoLocal(result, 'reg_date');
 				jsonStr = '{"code":300,"result":'+JSON.stringify(result)+'}';
 				res.end(jsonStr);

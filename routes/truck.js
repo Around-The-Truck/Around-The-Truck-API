@@ -32,7 +32,7 @@ exports.getTruckList = function(req, res){
 
 	// 모든 푸드트럭의 idx, 위치정보(gps, address), 이름을 받아온다.
 	client.query('use aroundthetruck');
-	client.query('select idx, `name`, phone_num, gps_longitude, gps_latitude, gps_altitude, gps_address, todays_sum, start_yn, start_time, follow_count, (select filename from photo where idx=truck.photo_id) as photo_filename, main_position, (select cat_name from category where idx=truck.category_id) as cat_name_big, (select cat_name from category where idx=truck.category_small) as cat_name_small, takeout_yn, cansit_yn, card_yn, reserve_yn, group_order_yn, always_open_yn, reg_date, open_date from truck',
+	client.query('select idx, `name`, phone_num, gps_longitude, gps_latitude, gps_altitude, gps_address, todays_sum, start_yn, start_time, follow_count, (select filename from photo where idx=truck.photo_id) as photo_filename, main_position, category_id, (select cat_name from category where idx=truck.category_id) as cat_name_big, (select cat_name from category where idx=truck.category_small) as cat_name_small, takeout_yn, cansit_yn, card_yn, reserve_yn, group_order_yn, always_open_yn, reg_date, open_date from truck',
 		function(error, result, fields) {
 			if(error) {
 				console.log('there\'s error in query!!');
