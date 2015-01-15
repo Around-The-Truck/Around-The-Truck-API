@@ -31,7 +31,7 @@ exports.getTruckList = function(req, res){
 
 	// 모든 푸드트럭의 idx, 위치정보(gps, address), 이름을 받아온다.
 	client.query('use aroundthetruck');
-	client.query('select idx, `name`, phone_num, gps_longitude, gps_latitude, gps_altitude, gps_address, todays_sum, start_yn, start_time, follow_count, (select filename from photo where idx=truck.photo_id) as photo_filename, main_position, category_id, category_small, takeout_yn, cansit_yn, card_yn, reserve_yn, group_order_yn, always_open_yn, reg_date, open_date from truck',
+	client.query('select idx, `name`, phone_num, gps_longitude, gps_latitude, gps_altitude, gps_address, todays_sum, start_yn, start_time, follow_count, (select filename from photo where idx=truck.photo_id) as photo_filename, main_position, (select cat_name from category where idx=truck.category_id) as cat_name_big, (select cat_name from category where idx=truck.category_small) as cat_name_small, takeout_yn, cansit_yn, card_yn, reserve_yn, group_order_yn, always_open_yn, reg_date, open_date from truck',
 		function(error, result, fields) {
 			if(error) {
 				console.log('there\'s error in query!!');
@@ -765,20 +765,76 @@ var insertRowImage = function(res, fileName, menuData, truckIdx) {
 	client.query(queryStr,
 		function(error, result) {
 			if(error) {
-				res.end('{"code":121}');
+				res.end('{"code":226}');
 				// TODO: 파일 지우기 : removeFile(fileName)
 				return;
 			}
 			else {
-				res.end("good!!!!");
+				getPhotoIdxes(client, res, fileName, menuData, truckIdx);
 				return;
-				insertRowTruck(client, res, result.insertId);
 			}
 		}
 	);
 }
 
-var insertRowTrucktodo = function(client, res, photoIdx) {
+function getPhotoIdxes (client, res, fileName, menuData, truckIdx) {
+	var fileIdx = Array();
+	var queryStr = "SELECT idx FROM photo where filename in (";
+	for(var i=0 ; i<fileName.length ; i++) {
+		queryStr += "'"+fileName[i]+"',";
+	}
+	queryStr = queryStr.substring(0, queryStr.length-1);
+	queryStr += ")";
+
+	client.query('query',
+		function(error, result, fields) {
+			if(error) {
+				res.end('{"code":227}');
+				return;
+			}
+			else {
+				if(result.length != fileName.length) {
+					res.end('{"code":228}');
+					return;
+				}
+				else {
+					for(var i=0 ; i<result.length ; i++) {
+						fileIdx.push(result[i]['idx']);
+					}
+				}
+				insertRowMenu(client, res, fileName, fileIdx, menuData, truckIdx);
+				return;
+				// jsonStr = '{"code":200,"result":'+JSON.stringify(result)+'}';
+				// res.end(jsonStr);
+			}
+		}
+	);
+}
+
+var insertRowMenu = function(client, res, fileName, fileIdx, menuData, truckIdx) {
+	//insert into menu (`name`, `price`, `truck_idx`, `photo_idx`, `description`, `ingredients`) values ('aaa','123','5','12','asdf','qwer'),('aaa','123','5','12','asdf','qwer');
+	var queryStr = "insert into menu (`name`, `price`, `truck_idx`, `photo_idx`, `description`, `ingredients`) values ('aaa','123','5','12','asdf','qwer'),('aaa','123','5','12','asdf','qwer')";
+	for(var i=0 ; i<fileName.length ; i++) {
+		queryStr += "('"+truckIdx+"', "+1+", '"+fileName[i]+"'),";
+	}
+	queryStr = queryStr.substring(0, queryStr.length-1);
+
+	client.query('use aroundthetruck');
+	client.query('set names utf8');
+	client.query(queryStr,
+		function(error, result) {
+			if(error) {
+				res.end('{"code":226}');
+				// TODO: 파일 지우기 : removeFile(fileName)
+				return;
+			}
+			else {
+				getPhotoIdxes(client, res, fileName, menuData, truckIdx);
+				return;
+			}
+		}
+	);
+	//////////////////////////////////////
 	client.query('UPDATE `aroundthetruck`.`truck` SET `name`=?, `phone_num`=?, `todays_sum`=?, `start_yn`=?, `follow_count`=?, `photo_id`=?, `category_id`=?, `category_small`=?, `takeout_yn`=?, `cansit_yn`=?, `card_yn`=?, `reserve_yn`=?, `group_order_yn`=?, `always_open_yn`=?, `reg_date`=NOW(), `open_date`=? WHERE `idx`=?',	
 		[g_truck_truckName, g_truck_phone, 0, 0, 0, photoIdx, g_truck_category_big, g_truck_category_small, g_truck_takeout_yn, g_truck_cansit_yn, g_truck_card_yn, g_truck_reserve_yn, g_truck_group_order_yn, g_truck_always_open_yn, g_truck_openDate, g_truck_idx],
 		function(err, result) {
