@@ -10,6 +10,7 @@ var routesUpload = require('./routes/upload');
 var routesArticle = require('./routes/article');
 var routesHistory = require('./routes/history');
 var routesPayment = require('./routes/payment');
+var routesCustomer = require('./routes/customer');
 var http = require('http');
 var path = require('path');
 
@@ -39,6 +40,8 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 
 
+// 손님 정보 불러오기
+app.post('/getCustomerInfo', routesCustomer.getCustomerInfo);
 // 손님 회원가입
 app.get('/join', routesJoin.join);
 app.get('/phoneOverlapCheck', routesJoin.phoneOverlapCheck);

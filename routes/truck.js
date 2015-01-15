@@ -1,6 +1,9 @@
 var fs = require('fs');
 var mysql = require('mysql');
 
+var g_host = '165.194.35.161';
+var g_user = 'food';
+var g_password = 'truck';
 
 var trucks = null;
 var longitude = null;
@@ -670,7 +673,7 @@ exports.addMenuList = function(req, res){
 		}
 
 		var menuData = raw;
-
+		// data valid check
 		for(var i=0 ; i<menuData.length ; i++) {
 			if(menuData[i]['name']==undefined || menuData[i]['price']==undefined) {
 				res.end('{"code":220}');
@@ -684,63 +687,82 @@ exports.addMenuList = function(req, res){
 
 		var fileData = Array();
 
-		
 		for(var i=0 ; i<menuData.length ; i++) {
+			// fileData valid check
 			if(eval("req.files.file"+i)==undefined) {
 				res.end('{"code":219}');
+				return;
+			}
+			else if(!(eval("req.files.file"+i).name)) {
+				res.end('{"code":223}');
 				return;
 			}
 			fileData.push(eval("req.files.file"+i));
 		}
 		/*
-		[{"photoFieldName":"file0", "name":"menu1"},{"photoFieldName":"file1", "name":"menu2"}]
+		[{"photoFieldName":"file0", "name":"menu1", "price":"1000", "description":"desdes", "ingredients":"one, two, three"},{"photoFieldName":"file1", "name":"menu2", "price":"1000", "description":"desdes", "ingredients":"one, two, three"}]
 		*/
-		uploadImage(client, res, fileData, menuData);
+		uploadImage(res, fileData, menuData, truckIdx);
 		return;
 	}
-	catch (err)	{	console.log(err);	}
+	catch (err)	{
+		res.end('{"code":225}');
+		return;
+	}
 };
 
-var uploadImage = function(client, res, fileData, menuData) {
-	// 파일 업로드
+var uploadImage = function(res, fileData, menuData, truckIdx) {
+	var realFileName = Array();
 
-	var data = fs.readFileSync(fileData[0])
-	console.log(data);
-	res.end("read!");
+	// 파일 읽기
+	for(var i=0 ; i<fileData.length ; i++) {
+		try {
+			var data = fs.readFileSync(fileData[i].path);
+			var path = __dirname + "/../public/upload/";
+			var fileName = fileData[i].name;
+
+			if(!fileName){
+		        res.end('{"code":223}');
+		        return ;
+		    }
+
+	        while(fs.existsSync(path+fileName))
+	        	fileName = "_" + fileName;
+
+	        try {
+	        	var writeResult = fs.writeFileSync(path+fileName, data);
+	        	realFileName.push(fileName);
+	        } catch (ee) {
+	        	res.end('{"code":224}');
+				return ;
+	        }
+		} catch (e) {
+			res.end('{"code":222}');
+			return ;
+		}	
+	}
+	
+	insertRowImage(res, realFileName, menuData, truckIdx);
 	return;
-
-
-	///////////////////////////////
-	var fileName = g_truck_file.name;
-	fs.readFile(g_truck_file.path, function (err, data) {
-        
-
-        if(!fileName){
-            res.end('{"code":118}');
-            return ;
-        }
-        else {
-        	var path = __dirname + "/../public/upload/";
-
-            while(fs.existsSync(path+fileName))
-            	fileName = "_" + fileName;
-
-            fs.writeFile(path+fileName, data, function (err) {
-            	if(err) {
-            		res.end('{"code":120}');
-            		return;
-            	}
-                
-            });
-        }
-    });
-    insertRowImage(client, res, fileName);
-	//insertRowTruck(client, res, fileName);
 };
 
-var insertRowImagetodo = function(client, res, fileName) {
-	client.query('insert into photo (`publisher`, `publisher_type`, `filename`) values (?,?,?)',
-		[g_truck_idx, 1, fileName],
+var insertRowImage = function(res, fileName, menuData, truckIdx) {
+
+	var client = mysql.createConnection({
+		host: '165.194.35.161',
+		user: 'food',
+		password: 'truck'
+	});
+
+	var queryStr = "INSERT INTO photo ( publisher, publisher_type, filename ) VALUES ";
+	for(var i=0 ; i<fileName.length ; i++) {
+		queryStr += "('"+truckIdx+"', "+1+", '"+fileName[i]+"'),";
+	}
+	queryStr = queryStr.substring(0, queryStr.length-1);
+
+	client.query('use aroundthetruck');
+	client.query('set names utf8');
+	client.query(queryStr,
 		function(error, result) {
 			if(error) {
 				res.end('{"code":121}');
@@ -748,6 +770,8 @@ var insertRowImagetodo = function(client, res, fileName) {
 				return;
 			}
 			else {
+				res.end("good!!!!");
+				return;
 				insertRowTruck(client, res, result.insertId);
 			}
 		}
