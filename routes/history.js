@@ -18,10 +18,12 @@ exports.getFollowList = function (req, res) {
 	// param Valid Check
 	if(phoneNum==undefined) {
 		res.end('{"code":401}');
+		client.end();
 		return;
 	}
 	else if(phoneNum.length==0) {
 		res.end('{"code":402}');
+		client.end();
 		return;
 	}
 
@@ -32,11 +34,13 @@ exports.getFollowList = function (req, res) {
 		function(error, result, fields) {
 			if(error) {
 				res.end('{"code":403}');
+				client.end();
 				return;
 			}
 			else {
 				jsonStr = '{"code":400,"result":'+JSON.stringify(result)+'}';
 				res.end(jsonStr);
+				client.end();
 				return;
 			}
 		}
@@ -57,10 +61,12 @@ exports.getPointHistory = function (req, res) {
 	// param Valid Check
 	if(phoneNum==undefined) {
 		res.end('{"code":401}');
+		client.end();
 		return;
 	}
 	else if(phoneNum.length==0) {
 		res.end('{"code":402}');
+		client.end();
 		return;
 	}
 
@@ -71,12 +77,59 @@ exports.getPointHistory = function (req, res) {
 		function(error, result, fields) {
 			if(error) {
 				res.end('{"code":403}');
+				client.end();
 				return;
 			}
 			else {
 				result = UTCtoLocal(result, 'date');
 				jsonStr = '{"code":400,"result":'+JSON.stringify(result)+'}';
 				res.end(jsonStr);
+				client.end();
+				return;
+			}
+		}
+	);
+};
+
+exports.getOpenHistory = function (req, res) {
+	res.writeHead(200, {'Content-Type': 'application/json;charset=utf-8'});
+
+	var client = mysql.createConnection({
+		host: g_host,
+		user: g_user,
+		password: g_pw
+	});
+
+	truckIdx = req.param('truckIdx');
+
+	// param Valid Check
+	if(truckIdx==undefined) {
+		res.end('{"code":401}');
+		client.end();
+		return;
+	}
+	else if(truckIdx.length==0) {
+		res.end('{"code":402}');
+		client.end();
+		return;
+	}
+
+	client.query('set names utf8');
+	client.query('use aroundthetruck');
+	client.query('SELECT * FROM aroundthetruck.open_history where truckIdx=?',
+		[truckIdx],
+		function(error, result, fields) {
+			if(error) {
+				res.end('{"code":403}');
+				client.end();
+				return;
+			}
+			else {
+				result = UTCtoLocal(result, 'start');
+				result = UTCtoLocal(result, 'end');
+				jsonStr = '{"code":400,"result":'+JSON.stringify(result)+'}';
+				res.end(jsonStr);
+				client.end();
 				return;
 			}
 		}

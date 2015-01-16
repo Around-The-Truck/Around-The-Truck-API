@@ -432,3 +432,10 @@ function unlikeArticleDelete(req, res, client, articleNum, phoneNum) {
 		}
 	);
 }
+
+exports.getTimeline = function (req, res) {
+	// 트럭 idx 받아서
+	// 해당 아티클 다 뽑고
+	// 해당 댓글 다 뽑고
+	// 조립해서 넘겨준다.
+};
