@@ -77,7 +77,6 @@ exports.getArticleList = function(req, res) {
 				return;
 			}
 			else {
-				getReplies()
 				result = UTCtoLocal(result, 'reg_date');
 				jsonStr = '{"code":300,"result":'+JSON.stringify(result)+'}';
 				res.end(jsonStr);
