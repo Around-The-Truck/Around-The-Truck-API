@@ -134,3 +134,5 @@ pay	9
 907	쿼리 에러: update truck Sum
 908	쿼리 에러: insert point History
 909	쿼리 에러: update customer Point
+910	쿼리 에러: insert customer point check
+911	없는 사용자거나 디비 무결성 파괴됨.

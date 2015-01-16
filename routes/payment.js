@@ -41,7 +41,7 @@ exports.pay = function (req, res) {
 			return;	
 		}
 	}
-	insertBuyHistory(res, truckIdx, customerPhone, menuArr);
+	customerPointCheck (res, truckIdx, customerPhone, menuArr);
 	return;
 	// buy_history - insert
 	// truck - update (todays_sum)
@@ -50,15 +50,13 @@ exports.pay = function (req, res) {
 	// else 그냥 완료
 };
 
-function insertBuyHistory (res, truckIdx, customerPhone, menuArr) {
-	// query string 을 만든다. 개복잡함....
-	var queryStr = "INSERT INTO `aroundthetruck`.`buy_history` (`truck_idx`, `menu_idx`, `price`, `reg_date`, `group_idx`, `customer_phone`, `cash_card_point`) VALUES ";
-	for(var i=0 ; i<menuArr.length ; i++) {
-		queryStr += "('"+truckIdx+"', '"+menuArr[i]['menuIdx']+"', '"+menuArr[i]['price']+"', NOW(), (SELECT `AUTO_INCREMENT`FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'aroundthetruck' AND   TABLE_NAME   = 'buy_history')";
-		if(i != 0) queryStr += "-"+menuArr.length;
-		queryStr += ", '"+customerPhone+"', '"+menuArr[i]['type']+"'),";
+function customerPointCheck (res, truckIdx, customerPhone, menuArr) {
+	var pointSum = 0;
+	// 포인트로 구매한 사항 추려내기
+	for (var i=0 ; i<menuArr.length ; i++) {
+		if (parseInt(menuArr[i]['type'])==2) 
+			pointSum += parseInt(menuArr[i]['price']);
 	}
-	queryStr = queryStr.substring(0, queryStr.length-1);
 
 	var client = mysql.createConnection({
 		host: g_host,
@@ -68,6 +66,45 @@ function insertBuyHistory (res, truckIdx, customerPhone, menuArr) {
 
 	client.query('use aroundthetruck');
 	client.query('set names utf8');
+	client.query('SELECT point FROM aroundthetruck.customer where phone=?',
+		[customerPhone],
+		function (error, result, fields) {
+			if (error) {
+				res.end('{"code":910}');
+				client.end();
+				return;
+			}
+			else {
+				if (result.length != 1) {
+					res.end('{"code":911}');
+					client.end();
+					return;
+				}
+
+				if (pointSum > parseInt(result[0]['point'])) {
+					res.end('{"code":912}');
+					client.end();
+					return;
+				}
+				else {
+					insertBuyHistory(res, client, truckIdx, customerPhone, menuArr);
+					return;
+				}
+			}
+		}
+	);
+}
+
+function insertBuyHistory (res, client, truckIdx, customerPhone, menuArr) {
+	// query string 을 만든다. 개복잡함....
+	var queryStr = "INSERT INTO `aroundthetruck`.`buy_history` (`truck_idx`, `menu_idx`, `price`, `reg_date`, `group_idx`, `customer_phone`, `cash_card_point`) VALUES ";
+	for(var i=0 ; i<menuArr.length ; i++) {
+		queryStr += "('"+truckIdx+"', '"+menuArr[i]['menuIdx']+"', '"+menuArr[i]['price']+"', NOW(), (SELECT `AUTO_INCREMENT`FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'aroundthetruck' AND   TABLE_NAME   = 'buy_history')";
+		if(i != 0) queryStr += "-"+menuArr.length;
+		queryStr += ", '"+customerPhone+"', '"+menuArr[i]['type']+"'),";
+	}
+	queryStr = queryStr.substring(0, queryStr.length-1);
+
 	client.query(queryStr,
 		function (error, result) {
 			if (error) {
@@ -113,6 +150,7 @@ function insertPointHistory (res, client, truckIdx, customerPhone, menuArr, g_id
 		if (parseInt(menuArr[i]['type'])!=2) arrPlus.push(menuArr[i]);
 		else	arrMinus.push(menuArr[i]);
 	}
+
 	// 일반 구매 금액 합산
 	for (var i=0 ; i<arrPlus.length ; i++) {
 		pricePlus += parseInt(arrPlus[i]['price']);
@@ -124,6 +162,12 @@ function insertPointHistory (res, client, truckIdx, customerPhone, menuArr, g_id
 	pointPlus = Math.round(pricePlus*0.05);
 	pointMinus = Math.round(priceMinus*0.05);
 
+	// 전부다 포인트로 구매했을때 --> 결제 그냥 완료 (적립을 안함!)
+	if(arrPlus.length==0) {
+		updateCustomerPoint (res, client, 0, priceMinus, customerPhone);
+		return;
+	}
+
 	client.query('INSERT INTO `aroundthetruck`.`point_history` (`customer_phone`, `bh_g_idx`, `truck_idx`, `price`, `point`, `reg_date`) VALUES (?, ?, ?, ?, ?, NOW())',
 		[customerPhone, g_id, truckIdx, pricePlus, pointPlus],
 		function (error, result) {
@@ -132,16 +176,16 @@ function insertPointHistory (res, client, truckIdx, customerPhone, menuArr, g_id
 				client.end();
 				return;
 			}
-			updateCustomerPoint (res, client, pointPlus, pointMinus, customerPhone);
+			updateCustomerPoint (res, client, pointPlus, priceMinus, customerPhone);
 			return;
 		}
 	);
 }
 
-function updateCustomerPoint (res, client, pointPlus, pointMinus, customerPhone) {
+function updateCustomerPoint (res, client, pointPlus, priceMinus, customerPhone) {
 
 	client.query('UPDATE `aroundthetruck`.`customer` SET `point`=`point`+?-? WHERE `phone`=?',
-		[pointPlus, pointMinus, customerPhone],
+		[pointPlus, pricedfadMinus, customerPhone],
 		function (error, result) {
 			if (error) {
 				res.end('{"code":909}');
