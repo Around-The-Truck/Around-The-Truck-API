@@ -7,6 +7,22 @@ var g_pw = 'truck';
 exports.pay = function (req, res) {
 	res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
 
+	truckIdx = req.param('truckIdx');
+	customerPhone = req.param('customerPhone');
+	// json
+	// TODO: 형식은 윤석이와 상의할것!
+	// ex) [{"menuidx":""},{}]
+	menuArr = req.param('menuArr');
+
+
+
+	// optional
+	// 누가			customerPhone
+	// 어떤 트럭에서	truckIdx
+	// 무슨 물건들을	
+	// 각각 얼마에 샀는지
+	// 포인트는 얼마나 쌓였는지
+
 	res.end("zzz");
 	return;
 
