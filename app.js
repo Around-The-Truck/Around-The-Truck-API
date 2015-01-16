@@ -88,11 +88,11 @@ app.post('/getMenuList', routesTruck.getMenuList);
 app.post('/getPointHistory', routesHistory.getPointHistory);
 // 결제 실행
 app.post('/pay', routesPayment.pay);
-
-// TODO : 타임라인 받아오기
+// 타임라인 받아오기
 app.post('/getTimeline', routesArticle.getTimeline);
-
 // TODO : 게시글 작성 (트럭만 가능)
+app.post('/writeArticle', routesArticle.writeArticle);
+// 장사 시작시간, 끝시간, 장사위치 출력
 app.get('/getOpenHistory', routesHistory.getOpenHistory);
 
 

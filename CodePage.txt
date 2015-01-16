@@ -72,6 +72,12 @@ article	3
 304	writer 또는 writer_type이 undefined
 305	writer 또는 writer_type이 빈칸
 306	쿼리실패: getReplies
+307	사진이 안넘어옴 (undefined)
+308	사진이 넘어오긴 했는데 이상하게...
+309	어딘가에서... try catch 에러
+310	파일이 이상해..!
+311	쿼리 에러! (insertRowImageArticle)
+312	article 등록 성공!
 
 history	4
 400	정상적으로 받아옴

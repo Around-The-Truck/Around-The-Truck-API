@@ -561,7 +561,130 @@ function assembleTimeline (res, client, result_article, result_reply, truckIdx) 
 	return;
 }
 
+/*
+// Data EXample
+[{"photoFieldName":"file0", "name":"맛있는 군인들", "price":"1000", "description":"건강에 좋습니다.", "ingredients":"군인1, 군인2, 군인3"},{"photoFieldName":"file1", "name":"특급전사", "price":"1000", "description":"화끈한 특급전사", "ingredients":"진이형"},{"photoFieldName":"file2", "name":"담배맛현우", "price":"1000", "description":"건강에 안좋아요", "ingredients":"이현우"}]
+*/
+exports.writeArticle = function(req, res){
+	res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
+	try
+	{
+		console.log("1");
+		var writer = req.param('writer');
+		var writerType = req.param('writerType');
+		var contents = req.param('contents');
+		var belongTo = req.param('belongTo');
+		console.log("2");
+		if(req.files.file==undefined) {
+			res.end('{"code":307}');
+			return;
+		}
+		console.log("3");
+		if(!req.files.file.name) {
+			res.end('{"code":308}');
+			return;
+		}
+		console.log("4");
+		if(writer==undefined || writerType==undefined || contents==undefined || belongTo==undefined) {
+			res.end('{"code":301}');
+			return;
+		}
+		console.log("5");
+		if(writer.length==0 || writerType.length==0 || contents.length==0 || belongTo.length==0) {
+			res.end('{"code":302}');
+			return;
+		}
+		console.log("6");
+		uploadImageArticle (res, writer, writerType, contents, belongTo, req.files.file);
+		return;
+	}
+	catch (err)	{
+		res.end('{"code":309}');
+		return;
+	}
+};
 
+var uploadImageArticle = function (res, writer, writerType, contents, belongTo, fileData) {
+	var fileName = "";
+	// 파일 읽기
+	try {
+		var data = fs.readFileSync(fileData.path);
+		var path = __dirname + "/../public/upload/";
+		fileName = fileData.name;
+
+		if(!fileName) {
+	        res.end('{"code":310}');
+	        return ;
+	    }
+
+        while(fs.existsSync(path+fileName))
+        	fileName = "_" + fileName;
+
+        try {
+        	var writeResult = fs.writeFileSync(path+fileName, data);
+        } catch (ee) {
+        	res.end('{"code":224}');
+			return ;
+        }
+	} catch (e) {
+		res.end('{"code":222}');
+		return ;
+	}	
+	
+	insertRowImageArticle (res, fileName, writer, writerType, contents, belongTo);
+	return;
+};
+
+var insertRowImageArticle = function insertRowImageArticle (res, fileName, writer, writerType, contents, belongTo) {
+
+	var client = mysql.createConnection({
+		host: '165.194.35.161',
+		user: 'food',
+		password: 'truck'
+	});
+
+	var queryStr = "INSERT INTO photo ( publisher, publisher_type, filename ) VALUES (?, ?, ?)";
+
+	client.query('use aroundthetruck');
+	client.query('set names utf8');
+	client.query(queryStr,
+		[writer, writerType, fileName],
+		function(error, result) {
+			if(error) {
+				res.end('{"code":311}');
+				client.end();
+				// TODO: 파일 지우기 : removeFile(fileName)
+				return;
+			}
+			else {
+				insertRowArticle (client, res, fileName, result.insertId, writer, writerType, contents, belongTo);
+				return;
+			}
+		}
+	);
+}
+
+var insertRowArticle = function insertRowArticle (client, res, fileName, photo_idx, writer, writerType, contents, belongTo) {
+	var queryStr = "INSERT INTO `aroundthetruck`.`article` (`photo_idx`, `writer`, `writer_type`, `contents`, `like`, `belong_to`, `reg_date`) VALUES (?, ?, ?, ?, '0', ?, NOW())";
+
+	client.query('use aroundthetruck');
+	client.query('set names utf8');
+	client.query(queryStr,
+		[photo_idx, writer, writerType, contents, belongTo],
+		function(error, result) {
+			if(error) {
+				res.end('{"code":229}');
+				client.end();
+				return;
+			}
+			else {
+				res.end('{"code":312}');
+				client.end();
+				return;
+			}
+		}
+	);
+};
 
 
 
