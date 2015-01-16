@@ -54,7 +54,7 @@ exports.join = function(req, res){
 		// 빈칸일때는 undefined가 아니고, ! 로 검출 불가능하고, name의 length 로만 검출 가능.
 
 		// undefined check
-		if(userName==undefined || birth==undefined || gender==undefined || phone==undefined || profileImg==undefined) {
+		if(userName==undefined || birth==undefined || gender==undefined || phone==undefined) {
 			res.end('{"code":117}');
 			return;
 		}
