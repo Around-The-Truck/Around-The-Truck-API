@@ -365,7 +365,7 @@ exports.truckEnd = function(req, res) {
 				}
 				else {
 					// update
-					truckEndUpdate(req, res, client, truckIdx);
+					truckEndUpdate(req, res, client, truckIdx, result[0]['start_time'], result[0]['todays_sum'], result[0]['gps_longitude'], result[0]['gps_latitude']);
 					return;
 				}
 				
@@ -374,7 +374,7 @@ exports.truckEnd = function(req, res) {
 	);
 };
 
-function truckEndUpdate(req, res, client, truckIdx) {
+function truckEndUpdate(req, res, client, truckIdx, start_time, todays_sum, gps_longitude, gps_latitude) {
 	client.query('UPDATE truck SET `start_yn`=0 WHERE `idx`=?',
 		[truckIdx],
 		function(error, result) {
@@ -389,9 +389,9 @@ function truckEndUpdate(req, res, client, truckIdx) {
 	});
 }
 
-var insertOpenHistory = function(client, res, idx) {
-	client.query('insert into open_history (truckIdx, start, end) values ('+idx+', (select start_time from truck where idx='+idx+'), NOW())',
-		[idx],
+var insertOpenHistory = function(client, res, idx, start_time, todays_sum, gps_longitude, gps_latitude) {
+	client.query('insert into open_history (truckIdx, start, end, todays_sum, gps_longitude, gps_latitude) values (?, ?, NOW(), ?, ?, ?)',
+		[idx, start_time, todays_sum, gps_longitude, gps_latitude],
 		function(error, result) {
 			// insert 실패
 			if(error) {

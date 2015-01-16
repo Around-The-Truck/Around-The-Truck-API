@@ -43,8 +43,7 @@ app.get('/', routes.index);
 // 손님 정보 불러오기
 app.post('/getCustomerInfo', routesCustomer.getCustomerInfo);
 // 손님 회원가입
-app.get('/join', routesJoin.join);
-app.get('/phoneOverlapCheck', routesJoin.phoneOverlapCheck);
+app.post('/join', routesJoin.join);
 // 트럭 리스트 불러오기
 app.get('/getTruckList', routesTruck.getTruckList);
 // 한개 트럭 정보 불러오기
@@ -85,17 +84,21 @@ app.get('/calculate', routesPayment.calculate);
 app.post('/addMenuList', routesTruck.addMenuList);
 // 메뉴 불러오기
 app.post('/getMenuList', routesTruck.getMenuList);
+// 날짜별 포인트 획득 내역
+app.post('/getPointHistory', routesHistory.getPointHistory);
+
 
 // TODO : 결제 실행
 app.get('/pay', routesPayment.pay);
 // TODO : 게시글 작성 (트럭만 가능)
 // TODO : 손님 회원가입 다시짜기 (번호인증 포함)
 
+
+
 // test
 app.get('/test', routesTest.test);
 
-// 날짜별 포인트 획득 내역
-app.post('/getPointHistory', routesHistory.getPointHistory);
+
 
 var server = http.createServer(app).listen(app.get('port'), function() {
 	console.log("Express server listening on port " + app.get('port'));

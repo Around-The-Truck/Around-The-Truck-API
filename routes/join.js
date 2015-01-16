@@ -1,12 +1,7 @@
 var fs = require('fs');
 var mysql = require('mysql');
 
-
-var nick_result=0;
-
 var email = null;
-var pw = null;
-var nick = null;
 
 ////////////////// new 
 var g_host = '165.194.35.161';
@@ -38,136 +33,141 @@ g_truck_group_order_yn = null;
 g_truck_always_open_yn = null;
 
 exports.join = function(req, res){
-	//res.writeHead(200, {'Content-Type': 'text/html;charset=utf-8'});
 	res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
 	try
 	{
+		var userName = req.param('userName');
+		var birth = req.param('birth');
+		var gender = req.param('gender');	//남자1, 여자2
+		var phone = req.param('phone');
 		// json 으로 온 데이터를 파싱.
-		userName = req.param('userName');
-		age = req.param('age');
-		gender = req.param('gender');
-		job = req.param('job');
-		phone = req.param('phone');
 		
-		console.log("input userName: "+userName);
-		console.log("input age: "+age);
-		console.log("input gender: "+gender);
-		console.log("input job: "+job);
-		console.log("input phone: "+phone);
+		var profileImg = req.files.file;
 
+		// 텍스트 데이터
+		// 아예 없을때는 undefined 이고, ! 로 검출 가능.
+		// 빈칸일때는 undefined가 아니고, ! 로 검출 가능하고, length==0 으로 검출 가능.
+
+		// 파일
+		// 아예 없을때는 undefined 이고, ! 로 검출 가능.
+		// 빈칸일때는 undefined가 아니고, ! 로 검출 불가능하고, name의 length 로만 검출 가능.
+
+		// undefined check
+		if(userName==undefined || birth==undefined || gender==undefined || phone==undefined) {
+			res.end('{"code":117}');
+			return;
+		}
+
+		// 프로필 사진 체크
+		if(!profileImg.name) {
+			res.end('{"code":118}');
+			return;
+		}
+		
+		// 빈칸 정보 체크
+		if(userName.length==0 || birth.length==0 || gender.length==0 || phone.length==0) {
+			res.end('{"code":119}');
+			return;
+		}
+	
 		// db 에서 찾기
 		var client = mysql.createConnection({
 			host: g_host,
 			user: g_user,
 			password: g_pw
 		});
-
-		// db 접속
-		
-		email_result=0;
-		nick_result=0;
 		client.query('use aroundthetruck');
 		client.query('set names utf8');
-		client.query('select * from customer where phone=?',
+		client.query('select phone from customer where phone=?',
 			[phone],
 			function(error, result, fields) {
 				if(error) {
-					console.log('there\'s error in query!!');
-					console.log('ErrMsg: '+ error);
+					res.end('{"code":101}');
+					return;
 				}
 				else {
-					console.log('Phone Overlap Test');
-					console.log(JSON.stringify(result));
-					// 있는지 없는지 case dealing
-					console.log('result.length = '+result.length);
-					phone_result = result.length;
-					// phone 중복 안 됨
 					if(result.length==0) {
-						console.log('Phone not overlapped');
+						uploadImageCustomer (client, res, userName, birth, gender, phone, profileImg);
 					}
-					// phone 중복됨
+					else if (result.length==1) {
+						res.end('{"code":102}');
+						return;
+					}
 					else {
-						console.log('Phone overlapped');
+						res.end('{"code":103}');
+						return;	
 					}
-					insertRow(client, res);
 				}
 		});
 	}
 	catch (err)	{	console.log(err);	}
 };
 
-exports.phoneOverlapCheck = function(req, res) {
-	res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
-	phone = req.param('phone');
+var uploadImageCustomer = function (client, res, userName, birth, gender, phone, profileImg) {
+	// 파일 업로드
+	var fileName = profileImg.name;
+	fs.readFile(profileImg.path, function (err, data) {
+        
+        if(!fileName){
+            res.end('{"code":118}');
+            return ;
+        }
+        else {
+        	var path = __dirname + "/../public/upload/";
 
-	// mysql 에서 찾기
-	var client = mysql.createConnection({
-		host: g_host,
-		user: g_user,
-		password: g_pw
-	});
+            while(fs.existsSync(path+fileName))
+            	fileName = "_" + fileName;
 
-	// db 접속
-	client.query('use aroundthetruck');
-	client.query('set names utf8');
-	client.query('select * from customer where phone=?',
-		[email],
-		function(error, result, fields) {
-			if(error) {
-				console.log('there\'s error in query!!');
-				console.log('ErrMsg: '+ error);
-			}
-			else {
-				console.log('Phone Overlap Test');
-				console.log(JSON.stringify(result));
-				// 있는지 없는지 case dealing
-				console.log('result.length = '+result.length);
-
-				// phone 중복 안 됨
-				if(result.length==0) {
-					console.log('Phone not overlapped');
-					jsonStr = '{"code":105}';
-					res.end(jsonStr);
-					return;
-
-				}
-				// phone 중복됨
-				else {
-					console.log('Phone overlapped');
-					jsonStr = '{"code":103}';
-					res.end(jsonStr);
-					return;
-				}
-			}
-	});
+            fs.writeFile(path+fileName, data, function (err) {
+            	if(err) {
+            		res.end('{"code":120}');
+            		return;
+            	}
+            });
+        }
+    });
+    insertRowImageCustomer (client, res, userName, birth, gender, phone, fileName);
 };
 
-var insertRow = function(client, res) {
-	if(phone_result==0){
-		// db에 insert
-		client.query('INSERT INTO customer (`name`, `phone`, `gender`, `age`, `reg_date`) VALUES (?, ?, ?, ?, NOW())',
-			[userName, phone, gender, age],
-			function(error, result) {
-				// insert 실패
-				if(error) {
-					jsonStr = '{"code":102}';
-					res.end(jsonStr);
-					return;
-				}
-				// insert 성공	
-				else {
-					jsonStr = '{"code":101}';
-					res.end(jsonStr);
-					return;
-				}
-		});
-	}
-	// 이미 phone이 존재하는 경우 (error)
-	else{
-		jsonStr = '{"code":103}';
-		res.end(jsonStr);
+var insertRowImageCustomer = function (client, res, userName, birth, gender, phone, fileName) {
+	client.query('insert into photo (`publisher`, `publisher_type`, `filename`) values (?,?,?)',
+		[phone, 0, fileName],
+		function(error, result) {
+			if(error) {
+				res.end('{"code":121}');
+				// TODO: 파일 지우기 : removeFile(fileName)
+				return;
+			}
+			else {
+				insertRowCustomer (client, res, result.insertId, userName, birth, gender, phone);
+				return;
+			}
+		}
+	);
+}
+
+var insertRowCustomer = function (client, res, photo_id, userName, birth, gender, phone) {
+	var age = new Date(birth);
+	if(isNaN(age)) {
+		res.end('{"code":104}');
 		return;
 	}
+	var today = new Date();
+	age = today.getFullYear() - age.getFullYear() + 1;
+
+	client.query('INSERT INTO `aroundthetruck`.`customer` (`name`, `phone`, `gender`, `age`, `point`, `photo_profile`, `reg_date`) VALUES (?, ?, ?, ?, ?, ?, NOW())',
+		[userName, phone, gender, age, 0, photo_id],
+		function(err, result) {
+			if(err) {
+				res.end('{"code":105}');
+				return;
+			}
+			else {
+				res.end('{"code":100}');
+				return;
+			}
+		}
+	);
 };
 
 exports.truckNumCheck = function(req, res) {
