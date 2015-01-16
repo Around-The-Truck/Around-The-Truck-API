@@ -461,8 +461,118 @@ function unlikeArticleDelete(req, res, client, articleNum, phoneNum) {
 }
 
 exports.getTimeline = function (req, res) {
-	// 트럭 idx 받아서
+	res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
+	// writer idx 받아서
+	var truckIdx = req.param('truckIdx');
+
+	if (truckIdx==undefined) {
+		res.end('{"code":301}');
+		return;
+	}
+	if (truckIdx.length==0) {
+		res.end('{"code":302}');
+		return;	
+	}
 	// 해당 아티클 다 뽑고
-	// 해당 댓글 다 뽑고
-	// 조립해서 넘겨준다.
+	var client = mysql.createConnection({
+		host: g_host,
+		user: g_user,
+		password: g_pw
+	});
+
+	// 여기서, 글쓴이는 무조건 트럭이라고 가정.
+	// 손님 글쓰기를 고려한다면 서브 쿼리가 바뀌어야함!
+	client.query('use aroundthetruck');
+	client.query('set names utf8');
+	// idx, filename, truck_filename, truckIdx, contents, like, reg_date
+	client.query('select article.idx as idx, filename, (select filename from photo where idx=(select photo_id from truck where truck.idx=?)) as truck_filename, writer as truckIdx, contents, `like`, reg_date from aroundthetruck.article, aroundthetruck.photo where article.writer=? and article.writer_type=? and article.photo_idx=photo.idx order by idx desc',
+		[truckIdx, truckIdx, 1],
+		function(err, result_article, fields) {
+			if(err) {
+				res.end('{"code":303}');
+				client.end();
+				return;
+			}
+			else {
+				if(result_article.length==0) {
+					jsonStr = '{"code":300,"result":[]}';
+					res.end(jsonStr);
+					client.end();
+					return;
+				}
+				result_article = UTCtoLocal(result_article, 'reg_date');
+				getReplies (res, client, result_article, truckIdx);
+				return;
+			}
+		}
+	);
 };
+// 해당 댓글 다 뽑고
+function getReplies (res, client, result_article, truckIdx) {
+	// r_idx, r_contents, r_writer, r_writer_name, r_writer_filename, r_article_idx, r_reg_date
+	var queryStr = "SELECT idx as r_idx, contents as r_contents, writer as r_writer, (select name from customer where customer.phone=reply.writer) as r_writer_name, (select filename from photo where photo.idx=(select photo_profile from customer where customer.phone=reply.writer)) as r_writer_filename, article_idx as r_article_idx, reg_date as r_reg_date FROM aroundthetruck.reply where article_idx in (";
+	for (var i=0 ; i<result_article.length ; i++) {
+		queryStr += "'"+result_article[i]['idx']+"',";
+		//'1', '2', '3'
+	}
+	queryStr = queryStr.substring(0, queryStr.length-1);
+	queryStr += ") order by r_reg_date;";
+
+	client.query(queryStr,
+		function (error, result_reply) {
+			if (error) {
+				res.end('{"code":306}');
+				client.end();
+				return;
+			}
+			result_reply = UTCtoLocal(result_reply, 'r_reg_date');
+			assembleTimeline (res, client, result_article, result_reply, truckIdx);
+			return;
+		}
+	);
+}
+// 조립해서 넘겨준다.
+
+function assembleTimeline (res, client, result_article, result_reply, truckIdx) {
+	// article
+	// // idx, filename, truck_filename, truckIdx, contents, like, reg_date
+
+	// reply
+	// // r_idx, r_contents, r_writer, r_writer_name, r_writer_filename, r_article_idx, r_reg_date
+
+	// 일단 배열을 만든다.
+	for (var i=0 ; i<result_article.length ; i++) {
+		result_article[i]['reply'] = Array();
+	}
+
+	// 각 댓글마다 제자리를 찾아준다.
+	for (var i=0 ; i<result_reply.length ; i++) {
+		for(var j=0 ; j<result_article.length ; j++) {
+			if(result_reply[i]['r_article_idx']==result_article[j]['idx']) {
+				result_article[j]['reply'].push(result_reply[i]);
+				break;
+			}
+		}
+	}
+
+	var jsonStr = '{"code":300,"result":'+JSON.stringify(result_article)+'}';
+	res.end(jsonStr);
+	client.end();
+	return;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -4,14 +4,6 @@
 003	사용자가 많다;; (디비 무결성 파괴됨!!!! 으앙)
 
 join	1
-///////////////
-101	정상적으로 회원가입. (다시 로그인 화면으로..)
-102	insert 실패
-103	이미 존재하는 phone
-104 	이미 존재하는 nick
-105	email Overlap test 통과
-106	nick Overlap test 통과
-//////////////////////
 100	정상적으로 회원가입.
 101	쿼리 실패 (회원 가입 시 select)
 102	이미 가입된 회원
@@ -74,16 +66,17 @@ truck	2
 
 article	3
 300	정상적으로 받아옴
-301	idx가 undefined
-302	idx가 빈칸
+301	파라미터 undefined
+302	파라미터 빈칸
 303	query 실패
 304	writer 또는 writer_type이 undefined
 305	writer 또는 writer_type이 빈칸
+306	쿼리실패: getReplies
 
 history	4
 400	정상적으로 받아옴
-401	phoneNum이 undefined
-402	phoneNum이 빈칸으로 넘어옴
+401	파라미터 undefined
+402	파라미터 빈칸으로 넘어옴
 403	쿼리 실패
 
 like	5
