@@ -185,7 +185,7 @@ function insertPointHistory (res, client, truckIdx, customerPhone, menuArr, g_id
 function updateCustomerPoint (res, client, pointPlus, priceMinus, customerPhone) {
 
 	client.query('UPDATE `aroundthetruck`.`customer` SET `point`=`point`+?-? WHERE `phone`=?',
-		[pointPlus, pricedfadMinus, customerPhone],
+		[pointPlus, priceMinus, customerPhone],
 		function (error, result) {
 			if (error) {
 				res.end('{"code":909}');
