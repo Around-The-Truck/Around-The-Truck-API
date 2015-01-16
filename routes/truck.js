@@ -97,8 +97,10 @@ function returnTrucks (res, client) {
 			for(var i=0 ; i<tt.length ; i++) {
 				// 선택된 지역 대분류의 소분류가 들어간 트럭을 선택한다.... 말이 너무 어렵나요? ㅋㅋ
 				for(var j=0 ; j<locationCategory[idxBig]['value'].length ; j++) {
-					if(tt[i]['gps_address'].indexOf(locationCategory[idxBig]['value'][j]) > -1)
+					if(tt[i]['gps_address'].indexOf(locationCategory[idxBig]['value'][j]) > -1) {
 						retVal.push(tt[i]);
+						break;
+					}
 				}
 			}
 
@@ -136,8 +138,10 @@ function returnTrucks (res, client) {
 			for(var i=0 ; i<tt.length ; i++) {
 				// 선택된 지역 대분류의 소분류가 들어간 트럭을 선택한다.... 말이 너무 어렵나요? ㅋㅋ
 				for(var j=0 ; j<locationCategory[idxBig]['value'].length ; j++) {
-					if(tt[i]['gps_address'].indexOf(locationCategory[idxBig]['value'][j]) > -1)
+					if(tt[i]['gps_address'].indexOf(locationCategory[idxBig]['value'][j]) > -1) {
 						retVal.push(tt[i]);
+						break;
+					}
 				}
 			}
 		}
