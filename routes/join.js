@@ -41,6 +41,11 @@ exports.join = function(req, res){
 		var gender = req.param('gender');	//남자1, 여자2
 		var phone = req.param('phone');
 		// json 으로 온 데이터를 파싱.
+
+		console.log("username: "+userName+", type is "+typeof(userName));
+		console.log("birth: "+birth+", type is "+typeof(birth));
+		console.log("gender: "+gender+", type is "+typeof(gender));
+		console.log("phone: "+phone+", type is "+typeof(phone));
 		console.log('before profileImg');
 		var profileImg = req.files.file;
 		console.log('after profileImg');
