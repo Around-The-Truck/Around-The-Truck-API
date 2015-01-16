@@ -89,9 +89,8 @@ app.post('/getPointHistory', routesHistory.getPointHistory);
 
 
 // TODO : 결제 실행
-app.get('/pay', routesPayment.pay);
+app.post('/pay', routesPayment.pay);
 // TODO : 게시글 작성 (트럭만 가능)
-// TODO : 손님 회원가입 다시짜기 (번호인증 포함)
 
 
 

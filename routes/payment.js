@@ -9,24 +9,74 @@ exports.pay = function (req, res) {
 
 	truckIdx = req.param('truckIdx');
 	customerPhone = req.param('customerPhone');
-	// json
 	// TODO: 형식은 윤석이와 상의할것!
-	// ex) [{"menuidx":""},{}]
+	// ex) [{"menuIdx":"5", "price":"7000", "type":"0"},{"menuIdx":"6","price":"6000", "type":"1"}]
 	menuArr = req.param('menuArr');
 
+	if(truckIdx==undefined || customerPhone==undefined || menuArr==undefined) {
+		res.end('{"code":901}');
+		return;
+	}
+	if(truckIdx.length==0 || customerPhone.length==0 || menuArr.length==0) {
+		res.end('{"code":902}');
+		return;
+	}
+	// json 으로 파싱.
+	try {
+		menuArr = JSON.parse(menuArr);
+	}
+	catch(e) {
+		res.end('{"code":903}');
+		return;
+	}
 
-
-	// optional
-	// 누가			customerPhone
-	// 어떤 트럭에서	truckIdx
-	// 무슨 물건들을	
-	// 각각 얼마에 샀는지
-	// 포인트는 얼마나 쌓였는지
-
-	res.end("zzz");
+	// menu data valid check
+	for(var i=0 ; i<menuArr.length ; i++) {
+		if(menuArr[i]['menuIdx']==undefined || menuArr[i]['price']==undefined || menuArr[i]['type']==undefined) {
+			res.end('{"code":904}');
+			return;
+		}
+		else if(menuArr[i]['menuIdx'].length==0 || menuArr[i]['price'].length==0 || menuArr[i]['type'].length==0) {
+			res.end('{"code":905}');
+			return;	
+		}
+	}
+	insertBuyHistory(res, truckIdx, customerPhone, menuArr);
 	return;
-
+	// buy_history - insert
+	// truck - update (todays_sum)
+	// type이 2(포인트)인걸 추린다.
+	// if(1개 이상일때) point_history 적립 후 완료
+	// else 그냥 완료
 };
+
+function insertBuyHistory (res, truckIdx, customerPhone, menuArr) {
+	// query string 을 만든다. 개복잡함....
+	var queryStr = "INSERT INTO `aroundthetruck`.`buy_history` (`truck_idx`, `menu_idx`, `price`, `reg_date`, `group_idx`, `customer_phone`, `cash_card_point`) VALUES ";
+	for(var i=0 ; i<menuArr.length ; i++) {
+		queryStr += "('"+truckIdx+"', '"+menuArr[i]['menuIdx']+"', '"+menuArr[i]['price']+"', NOW(), (SELECT `AUTO_INCREMENT`FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'aroundthetruck' AND   TABLE_NAME   = 'buy_history')";
+		if(i != 0) queryStr += "-"+menuArr.length;
+		queryStr += ", '"+customerPhone+"', '"+menuArr[i]['type']+"'),";
+	}
+	queryStr = queryStr.substring(0, queryStr.length-1);
+
+	var client = mysql.createConnection({
+		host: g_host,
+		user: g_user,
+		password: g_pw
+	});
+
+	client.query('use aroundthetruck');
+	client.query('set names utf8');
+	client.query(queryStr,
+		function (error, result) {
+			if (error) {
+				res.end('{"code":906}');
+				return;
+			}
+		}
+	);
+}
 
 exports.calculate = function (req, res) {
 	res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
@@ -57,6 +107,7 @@ exports.calculate = function (req, res) {
 		function (error, result_open_history, fields) {
 			if (error) {
 				res.end('{"code":703}');
+				client.end();
 				return;
 			}
 			else {
@@ -85,6 +136,7 @@ function getMoreInfo (res, req, client, result_open_history, truckIdx) {
 	if (result_open_history.length==0) {
 		jsonStr = '{"code":700,"result":'+JSON.stringify(result_open_history)+'}';
 		res.end(jsonStr);
+		client.end();
 		return;
 	}
 
@@ -93,6 +145,7 @@ function getMoreInfo (res, req, client, result_open_history, truckIdx) {
 		function (error, result_buy_history, fields) {
 			if (error) {
 				res.end('{"code":703}');
+				client.end();
 				return;
 			}
 			else {
@@ -244,6 +297,7 @@ function assemble (res, req, client, result_open_history, result_buy_history, tr
 	UTCtoLocal(result_open_history, 'end');
 	jsonStr = '{"code":700,"result":'+JSON.stringify(result_open_history)+'}';
 	res.end(jsonStr);
+	client.end();
 	return;
 }
 
