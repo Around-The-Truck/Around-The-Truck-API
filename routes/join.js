@@ -91,6 +91,7 @@ exports.join = function(req, res){
 			function(error, result, fields) {
 				if(error) {
 					res.end('{"code":101}');
+					client.end();
 					return;
 				}
 				else {
@@ -99,10 +100,12 @@ exports.join = function(req, res){
 					}
 					else if (result.length==1) {
 						res.end('{"code":102}');
+						client.end();
 						return;
 					}
 					else {
 						res.end('{"code":103}');
+						client.end();
 						return;	
 					}
 				}
@@ -119,6 +122,7 @@ var uploadImageCustomer = function (client, res, userName, birth, gender, phone,
         
         if(!fileName){
             res.end('{"code":118}');
+            client.end();
             return ;
         }
         else {
@@ -130,6 +134,7 @@ var uploadImageCustomer = function (client, res, userName, birth, gender, phone,
             fs.writeFile(path+fileName, data, function (err) {
             	if(err) {
             		res.end('{"code":120}');
+            		client.end();
             		return;
             	}
             });
@@ -144,6 +149,7 @@ var insertRowImageCustomer = function (client, res, userName, birth, gender, pho
 		function(error, result) {
 			if(error) {
 				res.end('{"code":121}');
+				client.end();
 				// TODO: 파일 지우기 : removeFile(fileName)
 				return;
 			}
@@ -159,6 +165,7 @@ var insertRowCustomer = function (client, res, photo_id, userName, birth, gender
 	var age = new Date(birth);
 	if(isNaN(age)) {
 		res.end('{"code":104}');
+		client.end();
 		return;
 	}
 	var today = new Date();
@@ -169,10 +176,12 @@ var insertRowCustomer = function (client, res, photo_id, userName, birth, gender
 		function(err, result) {
 			if(err) {
 				res.end('{"code":105}');
+				client.end();
 				return;
 			}
 			else {
 				res.end('{"code":100}');
+				client.end();
 				return;
 			}
 		}
@@ -206,21 +215,21 @@ exports.truckNumCheck = function(req, res) {
 		function(error, result, fields) {
 			if(error) {
 				res.end('{"code":108}');
+				client.end();
 				return;
 			}
 			else {
 				if(result.length==0) {
 					res.end('{"code":109}');
-					return;
 				}
 				else if(result.length==1) {
 					res.end('{"code":110}');
-					return;
 				}
 				else {
 					res.end('{"code":111}');
-					return;
 				}
+				client.end();
+				return;
 			}
 	});
 };
@@ -307,15 +316,18 @@ exports.truckJoin = function(req, res){
 			function(error, result, fields) {
 				if(error) {
 					res.end('{"code":113}');
+					client.end();
 					return;
 				}
 				else {
 					if(result.length==0 || result.length>1) {
 						res.end('{"code":114}');
+						client.end();
 						return;
 					}
 					else if(result.length==1 && result[0]['name']!=null) {
 						res.end('{"code":115}');
+						client.end();
 						return;
 					}
 					else if(result.length==1 && result[0]['name']==null) {
@@ -323,12 +335,16 @@ exports.truckJoin = function(req, res){
 					}
 					else {
 						res.end('{"code":116}');
+						client.end();
 						return;
 					}
 				}
 		});
 	}
-	catch (err)	{	console.log(err);	}
+	catch (err)	{	
+		console.log(err);	
+		if(client!=undefined)	client.end();
+	}
 };
 
 var uploadImage = function(client, res) {
@@ -339,6 +355,7 @@ var uploadImage = function(client, res) {
 
         if(!fileName){
             res.end('{"code":118}');
+            client.end();
             return ;
         }
         else {
@@ -350,6 +367,7 @@ var uploadImage = function(client, res) {
             fs.writeFile(path+fileName, data, function (err) {
             	if(err) {
             		res.end('{"code":120}');
+            		client.end();
             		return;
             	}
                 
@@ -366,6 +384,7 @@ var insertRowImage = function(client, res, fileName) {
 		function(error, result) {
 			if(error) {
 				res.end('{"code":121}');
+				client.end();
 				// TODO: 파일 지우기 : removeFile(fileName)
 				return;
 			}
@@ -382,10 +401,12 @@ var insertRowTruck = function(client, res, photoIdx) {
 		function(err, result) {
 			if(err) {
 				res.end('{"code":122}');
+				client.end();
 				return;
 			}
 			else {
 				res.end('{"code":123}');
+				client.end();
 				return;
 			}
 		}

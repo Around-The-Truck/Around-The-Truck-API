@@ -32,12 +32,14 @@ exports.getArticle = function(req, res) {
 		function(err, result, fields) {
 			if(err) {
 				res.end('{"code":303}');
+				client.end();
 				return;
 			}
 			else {
 				result = UTCtoLocal(result, 'reg_date');
 				jsonStr = '{"code":300,"result":'+JSON.stringify(result)+'}';
 				res.end(jsonStr);
+				client.end();
 				return;
 			}
 		}
@@ -74,12 +76,14 @@ exports.getArticleList = function(req, res) {
 		function(err, result, fields) {
 			if(err) {
 				res.end('{"code":303}');
+				client.end();
 				return;
 			}
 			else {
 				result = UTCtoLocal(result, 'reg_date');
 				jsonStr = '{"code":300,"result":'+JSON.stringify(result)+'}';
 				res.end(jsonStr);
+				client.end();
 				return;
 			}
 		}
@@ -133,11 +137,13 @@ res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
 		function(error, result, fields) {
 			if(error) {
 				res.end('{"code":503}');
+				client.end();
 				return;
 			}
 			else {
 				if(result.length==0) {
 					res.end('{"code":504}');
+					client.end();
 					return;		
 				}
 				else {
@@ -154,6 +160,7 @@ function likeArticleSelect(req, res, client, articleNum, phoneNum) {
 		function(error, result, fields) {
 			if(error) {
 				res.end('{"code":503}');
+				client.end();
 				return;
 			}
 			// 좋아요를 안했으므로 좋아요를 누른다. update & insert
@@ -164,11 +171,13 @@ function likeArticleSelect(req, res, client, articleNum, phoneNum) {
 			// 이미 좋아요를 눌렀다.
 			else if(result.length==1) {
 				res.end('{"code":507}');
+				client.end();
 				return;
 			}
 			// 그 외 디비 무결성 파괴의 경우...
 			else {
 				res.end('{"code":508}');
+				client.end();
 				return;
 			}
 		}
@@ -181,6 +190,7 @@ function likeArticleUpdate(req, res, client, articleNum, phoneNum) {
 		function(error, result) {
 			if(error) {
 				res.end('{"code":505}');
+				client.end();
 				return;
 			}
 			else {
@@ -196,10 +206,12 @@ function likeArticleInsert(req, res, client, articleNum, phoneNum) {
 		function(err, result) {
 			if(err) {
 				res.end('{"code":506}');
+				client.end();
 				return;
 			}
 			else {
 				res.end('{"code":500}');
+				client.end();
 				return;
 			}
 		}
@@ -237,11 +249,13 @@ exports.addReply = function(req, res) {
 		function(error, result, fields) {
 			if(error) {
 				res.end('{"code":603}');
+				client.end();
 				return;
 			}
 			else {
 				if(result.length==0) {
 					res.end('{"code":604}');
+					client.end();
 					return;
 				}
 				else {
@@ -261,10 +275,12 @@ function addReplyInsert(req, res, client, articleIdx, writer, writerType, conten
 		function(err, result) {
 			if(err) {
 				res.end('{"code":605}');
+				client.end();
 				return;
 			}
 			else {
 				res.end('{"code":600}');
+				client.end();
 				return;
 			}
 		}
@@ -298,12 +314,14 @@ exports.getReplyList = function(req, res) {
 		function(err, result, fields) {
 			if(err) {
 				res.end('{"code":606}');
+				client.end();
 				return;
 			}
 			else {
 				result = UTCtoLocal(result, 'reg_date');
 				jsonStr = '{"code":600,"result":'+JSON.stringify(result)+'}';
 				res.end(jsonStr);
+				client.end();
 				return;
 			}
 		}
@@ -339,11 +357,13 @@ res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
 		function(error, result, fields) {
 			if(error) {
 				res.end('{"code":503}');
+				client.end();
 				return;
 			}
 			else {
 				if(result.length==0) {
 					res.end('{"code":504}');
+					client.end();
 					return;		
 				}
 				else {
@@ -359,11 +379,13 @@ function unlikeArticleSelect(req, res, client, articleNum, phoneNum) {
 		function(error, result, fields) {
 			if(error) {
 				res.end('{"code":503}');
+				client.end();
 				return;
 			}
 			// 애초에 좋아요를 안했다.
 			else if(result.length==0) {
 				res.end('{"code":511}');
+				client.end();
 				return;
 			}
 			// 팔로우를 해제. update & insert
@@ -374,6 +396,7 @@ function unlikeArticleSelect(req, res, client, articleNum, phoneNum) {
 			// 그 외 디비 무결성 파괴의 경우...
 			else {
 				res.end('{"code":508}');
+				client.end();
 				return;
 			}
 		}
@@ -386,6 +409,7 @@ function zeroCheckArticle (req, res, client, articleNum, phoneNum) {
 		function (error, result, fields) {
 			if(error) {
 				res.end('{"code":512}');
+				client.end();
 				return;
 			}
 			// count down 하려 봤더니 이미 0이다... 
@@ -408,6 +432,7 @@ function unlikeArticleUpdate(req, res, client, articleNum, phoneNum) {
 		function(error, result) {
 			if(error) {
 				res.end('{"code":513}');
+				client.end();
 				return;
 			}
 			else {
@@ -423,10 +448,12 @@ function unlikeArticleDelete(req, res, client, articleNum, phoneNum) {
 		function(err, result) {
 			if(err) {
 				res.end('{"code":506}');
+				client.end();
 				return;
 			}
 			else {
 				res.end('{"code":500}');
+				client.end();
 				return;
 			}
 		}

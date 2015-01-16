@@ -37,12 +37,17 @@ exports.getTruckList = function(req, res){
 			if(error) {
 				console.log('there\'s error in query!!');
 				console.log(error);
+				res.end('{"code":215}');
+				client.end();
+				return;
+
 			}
 			else {
 				var jsonStr = '';
 				if(result.length==0) {
 					jsonStr = '{"code":201}';
 					res.end(jsonStr);
+					client.end();
 				}
 				else {
 					// 모든 트럭 정보 전역변수에 저장
@@ -91,6 +96,7 @@ function returnTrucks (res, client) {
 			// 대분류를 못찾았다...
 			if(idxBig==-1) {
 				res.end('{"code":231}');
+				client.end();
 				return;
 			}
 			// 모튼 트럭 리스트에서 ...
@@ -132,6 +138,7 @@ function returnTrucks (res, client) {
 			// 대분류를 못찾았다...
 			if(idxBig==-1) {
 				res.end('{"code":231}');
+				client.end();
 				return;
 			}
 			// 모튼 트럭 리스트에서 ...
@@ -151,6 +158,7 @@ function returnTrucks (res, client) {
 		}
 	}
 	jsonStr = '{"code":200,"result":'+JSON.stringify(retVal)+'}';
+	client.end();
 	res.end(jsonStr);
 }
 
@@ -186,6 +194,7 @@ exports.getTruckInfo = function(req, res){
 	if(truckIdx==null) {
 		jsonStr = '{"code":203}';
 		res.end(jsonStr);
+		client.end();
 		return;
 	}
 
@@ -195,12 +204,16 @@ exports.getTruckInfo = function(req, res){
 			if(error) {
 				console.log('there\'s error in query!!');
 				console.log(error);
+				res.end('{"code":215}');
+				client.end();
+				return;
 			}
 			else {
 				var jsonStr = '';
 				if(result.length==0) {
 					jsonStr = '{"code":204}';
 					res.end(jsonStr);
+					client.end();
 				}
 				else {
 					result = UTCtoLocal(result, 'start_time');
@@ -208,6 +221,7 @@ exports.getTruckInfo = function(req, res){
 					result = UTCtoLocal(result, 'open_date');
 					jsonStr = '{"code":200,"result":'+JSON.stringify(result)+'}';
 					res.end(jsonStr);
+					client.end();
 				}
 			}
 		}
@@ -231,11 +245,13 @@ exports.getTruckShort = function(req, res){
 	if(truckIdx==undefined) {
 		jsonStr = '{"code":203}';
 		res.end(jsonStr);
+		client.end();
 		return;
 	}
 
 	if(truckIdx.length==0) {
 		res.end('{"code":214}');
+		client.end();
 		return;
 	}
 
@@ -245,16 +261,21 @@ exports.getTruckShort = function(req, res){
 			if(error) {
 				console.log('there\'s error in query!!');
 				console.log(error);
+				res.end('{"code":215}');
+				client.end();
+				return;
 			}
 			else {
 				var jsonStr = '';
 				if(result.length==0) {
 					jsonStr = '{"code":204}';
 					res.end(jsonStr);
+					client.end();
 				}
 				else {
 					jsonStr = '{"code":200,"result":'+JSON.stringify(result)+'}';
 					res.end(jsonStr);
+					client.end();
 				}
 			}
 		}
@@ -291,15 +312,18 @@ exports.truckStart = function(req, res) {
 		function(error, result, fields) {
 			if(error) {
 				res.end('{"code":211}');
+				client.end();
 				return;
 			}
 			else {
 				if(result.length==0) {
 					res.end('{"code":201}');
+					client.end();
 					return;
 				}
 				else if(result[0]['start_yn']=='1') {
 					res.end('{"code":212}');
+					client.end();
 					return;
 				}
 				else {
@@ -319,10 +343,12 @@ function truckStartUpdate(req, res, client, truckIdx, truckLat, truckLng) {
 		function(error, result) {
 			if(error) {
 				res.end('{"code":204}');
+				client.end();
 				return;
 			}
 			else {
 				res.end('{"code":205}');
+				client.end();
 				return;
 			}
 	});
@@ -356,15 +382,18 @@ exports.truckEnd = function(req, res) {
 		function(error, result, fields) {
 			if(error) {
 				res.end('{"code":211}');
+				client.end();
 				return;
 			}
 			else {
 				if(result.length==0) {
 					res.end('{"code":201}');
+					client.end();
 					return;
 				}
 				else if(result[0]['start_yn']=='0') {
 					res.end('{"code":213}');
+					client.end();
 					return;
 				}
 				else {
@@ -384,6 +413,7 @@ function truckEndUpdate(req, res, client, truckIdx, start_time, todays_sum, gps_
 		function(error, result) {
 			if(error) {
 				res.end('{"code":206}');
+				client.end();
 				return;
 			}
 			else {
@@ -401,11 +431,15 @@ var insertOpenHistory = function(client, res, idx, start_time, todays_sum, gps_l
 			if(error) {
 				jsonStr = '{"code":207}';
 				res.end(jsonStr);
+				client.end();
+				return;
 			}
 			// insert 성공	
 			else {
 				jsonStr = '{"code":208}';
 				res.end(jsonStr);
+				client.end();
+				return;
 			}
 	});
 };
@@ -457,11 +491,13 @@ res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
 		function(error, result, fields) {
 			if(error) {
 				res.end('{"code":503}');
+				client.end();
 				return;
 			}
 			else {
 				if(result.length==0) {
 					res.end('{"code":509}');
+					client.end();
 					return;		
 				}
 				else {
@@ -477,6 +513,7 @@ function followTruckSelect(req, res, client, truckIdx, phoneNum) {
 		function(error, result, fields) {
 			if(error) {
 				res.end('{"code":503}');
+				client.end();
 				return;
 			}
 			// 팔로우를 안했으므로 팔로우를 누른다. update & insert
@@ -487,11 +524,13 @@ function followTruckSelect(req, res, client, truckIdx, phoneNum) {
 			// 이미 팔로우를 눌렀다.
 			else if(result.length==1) {
 				res.end('{"code":507}');
+				client.end();
 				return;
 			}
 			// 그 외 디비 무결성 파괴의 경우...
 			else {
 				res.end('{"code":508}');
+				client.end();
 				return;
 			}
 		}
@@ -504,6 +543,7 @@ function followTruckUpdate(req, res, client, truckIdx, phoneNum) {
 		function(error, result) {
 			if(error) {
 				res.end('{"code":510}');
+				client.end();
 				return;
 			}
 			else {
@@ -519,10 +559,12 @@ function followTruckInsert(req, res, client, truckIdx, phoneNum) {
 		function(err, result) {
 			if(err) {
 				res.end('{"code":506}');
+				client.end();
 				return;
 			}
 			else {
 				res.end('{"code":500}');
+				client.end();
 				return;
 			}
 		}
@@ -558,11 +600,13 @@ res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
 		function(error, result, fields) {
 			if(error) {
 				res.end('{"code":503}');
+				client.end();
 				return;
 			}
 			else {
 				if(result.length==0) {
 					res.end('{"code":509}');
+					client.end();
 					return;		
 				}
 				else {
@@ -578,11 +622,13 @@ function unfollowTruckSelect(req, res, client, truckIdx, phoneNum) {
 		function(error, result, fields) {
 			if(error) {
 				res.end('{"code":503}');
+				client.end();
 				return;
 			}
 			// 애초에 팔로우를 안했다.
 			else if(result.length==0) {
 				res.end('{"code":511}');
+				client.end();
 				return;
 			}
 			// 팔로우를 해제. update & insert
@@ -593,6 +639,7 @@ function unfollowTruckSelect(req, res, client, truckIdx, phoneNum) {
 			// 그 외 디비 무결성 파괴의 경우...
 			else {
 				res.end('{"code":508}');
+				client.end();
 				return;
 			}
 		}
@@ -605,6 +652,7 @@ function zeroCheck (req, res, client, truckIdx, phoneNum) {
 		function (error, result, fields) {
 			if(error) {
 				res.end('{"code":512}');
+				client.end();
 				return;
 			}
 			// count down 하려 봤더니 이미 0이다... 
@@ -627,6 +675,7 @@ function unfollowTruckUpdate(req, res, client, truckIdx, phoneNum) {
 		function(error, result) {
 			if(error) {
 				res.end('{"code":510}');
+				client.end();
 				return;
 			}
 			else {
@@ -642,10 +691,12 @@ function unfollowTruckDelete(req, res, client, truckIdx, phoneNum) {
 		function(err, result) {
 			if(err) {
 				res.end('{"code":506}');
+				client.end();
 				return;
 			}
 			else {
 				res.end('{"code":500}');
+				client.end();
 				return;
 			}
 		}
@@ -669,6 +720,7 @@ exports.getMenuList = function(req, res){
 	if(truckIdx==null) {
 		jsonStr = '{"code":203}';
 		res.end(jsonStr);
+		client.end();
 		return;
 	}
 
@@ -678,11 +730,13 @@ exports.getMenuList = function(req, res){
 		function(error, result, fields) {
 			if(error) {
 				res.end('{"code":215}');
+				client.end();
 				return;
 			}
 			else {
 				jsonStr = '{"code":200,"result":'+JSON.stringify(result)+'}';
 				res.end(jsonStr);
+				client.end();
 
 			}
 		}
@@ -809,6 +863,7 @@ var insertRowImage = function(res, fileName, menuData, truckIdx) {
 		function(error, result) {
 			if(error) {
 				res.end('{"code":226}');
+				client.end();
 				// TODO: 파일 지우기 : removeFile(fileName)
 				return;
 			}
@@ -833,11 +888,13 @@ function getPhotoIdxes (client, res, fileName, menuData, truckIdx) {
 		function(error, result, fields) {
 			if(error) {
 				res.end('{"code":227}');
+				client.end();
 				return;
 			}
 			else {
 				if(result.length != fileName.length) {
 					res.end('{"code":228}');
+					client.end();
 					return;
 				}
 				else {
@@ -867,10 +924,12 @@ var insertRowMenu = function(client, res, fileName, fileIdx, menuData, truckIdx)
 		function(error, result) {
 			if(error) {
 				res.end('{"code":229}');
+				client.end();
 				return;
 			}
 			else {
 				res.end('{"code":230}');
+				client.end();
 				return;
 			}
 		}

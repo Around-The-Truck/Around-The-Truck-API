@@ -18,10 +18,12 @@ exports.getCustomerInfo = function(req, res){
 
 	if(customerPhone==undefined) {
 		res.end('{"code":801}');
+		client.end();
 		return;
 	}
 	if(customerPhone.length==0) {
 		res.end('{"code":802}');
+		client.end();
 		return;	
 	}
 
@@ -34,11 +36,13 @@ exports.getCustomerInfo = function(req, res){
 			if(error) {
 				console.log('there\'s error in query!!');
 				res.end('{"code":803}');
+				client.end();
 				return;
 			}
 			result = UTCtoLocal(result, 'reg_date');
 			jsonStr = '{"code":200,"result":'+JSON.stringify(result)+'}';
 			res.end(jsonStr);
+			client.end();
 			return;
 		}
 	);
