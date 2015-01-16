@@ -41,8 +41,9 @@ exports.join = function(req, res){
 		var gender = req.param('gender');	//남자1, 여자2
 		var phone = req.param('phone');
 		// json 으로 온 데이터를 파싱.
-		
+		console.log('before profileImg');
 		var profileImg = req.files.file;
+		console.log('after profileImg');
 
 		// 텍스트 데이터
 		// 아예 없을때는 undefined 이고, ! 로 검출 가능.
@@ -53,17 +54,19 @@ exports.join = function(req, res){
 		// 빈칸일때는 undefined가 아니고, ! 로 검출 불가능하고, name의 length 로만 검출 가능.
 
 		// undefined check
-		if(userName==undefined || birth==undefined || gender==undefined || phone==undefined) {
+		if(userName==undefined || birth==undefined || gender==undefined || phone==undefined || profileImg==undefined) {
 			res.end('{"code":117}');
 			return;
 		}
 
+		console.log('before if');
 		// 프로필 사진 체크
 		if(!profileImg.name) {
+			console.log('inner if');
 			res.end('{"code":118}');
 			return;
 		}
-		
+		console.log('after if');
 		// 빈칸 정보 체크
 		if(userName.length==0 || birth.length==0 || gender.length==0 || phone.length==0) {
 			res.end('{"code":119}');
@@ -104,6 +107,7 @@ exports.join = function(req, res){
 };
 
 var uploadImageCustomer = function (client, res, userName, birth, gender, phone, profileImg) {
+	console.log('uploadImagecustomer');
 	// 파일 업로드
 	var fileName = profileImg.name;
 	fs.readFile(profileImg.path, function (err, data) {

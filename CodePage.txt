@@ -4,12 +4,22 @@
 003	사용자가 많다;; (디비 무결성 파괴됨!!!! 으앙)
 
 join	1
+///////////////
 101	정상적으로 회원가입. (다시 로그인 화면으로..)
 102	insert 실패
 103	이미 존재하는 phone
 104 	이미 존재하는 nick
 105	email Overlap test 통과
 106	nick Overlap test 통과
+//////////////////////
+100	정상적으로 회원가입.
+101	쿼리 실패 (회원 가입 시 select)
+102	이미 가입된 회원
+103	회원이 여러번 가입...? (디비 무결성 파괴됨!!!! 으앙)
+104	birth 파싱 실패
+105	회원가입 insert 실패
+
+
 107	잘못된 트럭 고유번호 (not numeric)
 108	트럭고유번호 조회 실패
 109	잘못된 트럭 고유번호 (디비에 존재하지 않음!)
@@ -111,5 +121,17 @@ calculate	7
 customer	8
 800	정상적으로 정보 출력
 801	파라미터 undefined
-802	파라미터 빈칸으로 넘어옴
+802	파라미터 빈 칸으로 넘어옴
 803	쿼리 에러!
+
+pay	9
+900	결제 성공
+901	파라미터 undefined
+902	파라미터 빈 칸으로 넘어옴
+903	json 파싱 실패
+904	data 에 무언가 undefined
+905	data 에 무언가 빈 칸으로 넘어옴
+906	쿼리 에러: insert buy_history
+907	쿼리 에러: update truck Sum
+908	쿼리 에러: insert point History
+909	쿼리 에러: update customer Point

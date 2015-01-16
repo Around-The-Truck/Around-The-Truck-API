@@ -10,7 +10,7 @@ exports.pay = function (req, res) {
 	truckIdx = req.param('truckIdx');
 	customerPhone = req.param('customerPhone');
 	// TODO: 형식은 윤석이와 상의할것!
-	// ex) [{"menuIdx":"5", "price":"7000", "type":"0"},{"menuIdx":"6","price":"6000", "type":"1"}]
+	// ex) [{"menuIdx":"1", "price":"3000", "type":"0"},{"menuIdx":"2","price":"4000", "type":"1"}]
 	menuArr = req.param('menuArr');
 
 	if(truckIdx==undefined || customerPhone==undefined || menuArr==undefined) {
@@ -72,8 +72,85 @@ function insertBuyHistory (res, truckIdx, customerPhone, menuArr) {
 		function (error, result) {
 			if (error) {
 				res.end('{"code":906}');
+				client.end();
 				return;
 			}
+			updateTruckSum (res, client, truckIdx, customerPhone, menuArr, result.insertId);
+			return;
+		}
+	);
+}
+
+function updateTruckSum (res, client, truckIdx, customerPhone, menuArr, g_id) {
+	var sum = 0;
+	for(var i=0 ; i<menuArr.length ; i++) {
+		sum += parseInt(menuArr[i]['price']);
+	}
+	client.query('UPDATE `aroundthetruck`.`truck` SET `todays_sum`=`todays_sum`+? WHERE `idx`=?',
+		[sum, truckIdx],
+		function (error, result) {
+			if(error) {
+				res.end('{"code":907}');
+				client.end();
+				return;
+			}
+			insertPointHistory (res, client, truckIdx, customerPhone, menuArr, g_id);
+			return;
+		}
+	);
+}
+
+function insertPointHistory (res, client, truckIdx, customerPhone, menuArr, g_id) {
+	var arrPlus = Array();
+	var arrMinus = Array();
+	var pricePlus = 0;
+	var priceMinus = 0;
+	var pointPlus = 0;
+	var pointMinus = 0;
+
+	// 포인트로 구매한 사항 추려내기
+	for (var i=0 ; i<menuArr.length ; i++) {
+		if (parseInt(menuArr[i]['type'])!=2) arrPlus.push(menuArr[i]);
+		else	arrMinus.push(menuArr[i]);
+	}
+	// 일반 구매 금액 합산
+	for (var i=0 ; i<arrPlus.length ; i++) {
+		pricePlus += parseInt(arrPlus[i]['price']);
+	}
+	// 포인트트 구매 금액 합산
+	for (var i=0 ; i<arrMinus.length ; i++) {
+		priceMinus += parseInt(arrMinus[i]['price']);
+	}
+	pointPlus = Math.round(pricePlus*0.05);
+	pointMinus = Math.round(priceMinus*0.05);
+
+	client.query('INSERT INTO `aroundthetruck`.`point_history` (`customer_phone`, `bh_g_idx`, `truck_idx`, `price`, `point`, `reg_date`) VALUES (?, ?, ?, ?, ?, NOW())',
+		[customerPhone, g_id, truckIdx, pricePlus, pointPlus],
+		function (error, result) {
+			if(error) {
+				res.end('{"code":908}');
+				client.end();
+				return;
+			}
+			updateCustomerPoint (res, client, pointPlus, pointMinus, customerPhone);
+			return;
+		}
+	);
+}
+
+function updateCustomerPoint (res, client, pointPlus, pointMinus, customerPhone) {
+
+	client.query('UPDATE `aroundthetruck`.`customer` SET `point`=`point`+?-? WHERE `phone`=?',
+		[pointPlus, pointMinus, customerPhone],
+		function (error, result) {
+			if (error) {
+				res.end('{"code":909}');
+				client.end();
+				return;
+			}
+			res.end('{"code":900}');
+			client.end();
+			return;
 		}
 	);
 }
