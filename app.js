@@ -1,7 +1,6 @@
 /**
  * Module dependencies.
  */
-
 var express = require('express');
 var routes = require('./routes');
 var routesJoin = require('./routes/join');
@@ -11,6 +10,7 @@ var routesArticle = require('./routes/article');
 var routesHistory = require('./routes/history');
 var routesPayment = require('./routes/payment');
 var routesCustomer = require('./routes/customer');
+var routesTest = require('./routes/test');
 var http = require('http');
 var path = require('path');
 
@@ -79,20 +79,23 @@ app.get('/followTruck', routesTruck.followTruck);
 app.get('/unfollowTruck', routesTruck.unfollowTruck);
 // 게시글 좋아요를 취소한다. (사용자만 가능)
 app.get('/unlikeArticle', routesArticle.unlikeArticle);
-// TODO : 정산하기
+// 정산하기
 app.get('/calculate', routesPayment.calculate);
-// TODO : 메뉴 불러오기
-//app.
-// TODO : 결제 실행
-app.get('/pay', routesPayment.pay);
-
-// TODO : 게시글 작성 (트럭만 가능)
-// TODO : 메뉴 등록
+// 메뉴 등록
 app.post('/addMenuList', routesTruck.addMenuList);
-// TODO : 손님 회원가입 다시짜기 (번호인증 포함)
 // 메뉴 불러오기
 app.post('/getMenuList', routesTruck.getMenuList);
 
+// TODO : 결제 실행
+app.get('/pay', routesPayment.pay);
+// TODO : 게시글 작성 (트럭만 가능)
+// TODO : 손님 회원가입 다시짜기 (번호인증 포함)
+
+// test
+app.get('/test', routesTest.test);
+
+// 날짜별 포인트 획득 내역
+app.post('/getPointHistory', routesHistory.getPointHistory);
 
 var server = http.createServer(app).listen(app.get('port'), function() {
 	console.log("Express server listening on port " + app.get('port'));

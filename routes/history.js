@@ -66,7 +66,7 @@ exports.getPointHistory = function (req, res) {
 
 	client.query('set names utf8');
 	client.query('use aroundthetruck');
-	client.query('select * from point_history where customer_phone=? order by idx desc',
+	client.query('select sum(point) as sum, reg_date as date from point_history where customer_phone=01044550423 group by date(reg_date) order by reg_date desc',
 		[phoneNum],
 		function(error, result, fields) {
 			if(error) {
@@ -74,7 +74,7 @@ exports.getPointHistory = function (req, res) {
 				return;
 			}
 			else {
-				result = UTCtoLocal(result, 'reg_date');
+				result = UTCtoLocal(result, 'date');
 				jsonStr = '{"code":400,"result":'+JSON.stringify(result)+'}';
 				res.end(jsonStr);
 				return;

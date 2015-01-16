@@ -684,7 +684,10 @@ exports.getMenuList = function(req, res){
 		}
 	);
 };
-
+/*
+// Data EXample
+[{"photoFieldName":"file0", "name":"맛있는 군인들", "price":"1000", "description":"건강에 좋습니다.", "ingredients":"군인1, 군인2, 군인3"},{"photoFieldName":"file1", "name":"특급전사", "price":"1000", "description":"화끈한 특급전사", "ingredients":"진이형"},{"photoFieldName":"file2", "name":"담배맛현우", "price":"1000", "description":"건강에 안좋아요", "ingredients":"이현우"}]
+*/
 exports.addMenuList = function(req, res){
 	res.writeHead(200, {'Content-Type':'application/json;charset=utf-8'});
 	try
@@ -738,9 +741,6 @@ exports.addMenuList = function(req, res){
 			}
 			fileData.push(eval("req.files.file"+i));
 		}
-		/*
-		[{"photoFieldName":"file0", "name":"menu1", "price":"1000", "description":"desdes", "ingredients":"one, two, three"},{"photoFieldName":"file1", "name":"menu2", "price":"1000", "description":"desdes", "ingredients":"one, two, three"}]
-		*/
 		uploadImage(res, fileData, menuData, truckIdx);
 		return;
 	}
