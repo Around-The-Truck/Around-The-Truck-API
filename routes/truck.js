@@ -417,7 +417,7 @@ function truckEndUpdate(req, res, client, truckIdx, start_time, todays_sum, gps_
 				return;
 			}
 			else {
-				insertOpenHistory(client, res, truckIdx);
+				insertOpenHistory(client, res, idx, start_time, todays_sum, gps_longitude, gps_latitude);
 				return;
 			}
 	});
