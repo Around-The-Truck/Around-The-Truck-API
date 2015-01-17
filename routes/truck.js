@@ -430,6 +430,7 @@ var insertOpenHistory = function(client, res, idx, start_time, todays_sum, gps_l
 			// insert 실패
 			if(error) {
 				jsonStr = '{"code":207}';
+				console.log(jsonStr);
 				res.end(jsonStr);
 				client.end();
 				return;
@@ -437,6 +438,7 @@ var insertOpenHistory = function(client, res, idx, start_time, todays_sum, gps_l
 			// insert 성공	
 			else {
 				jsonStr = '{"code":208}';
+				console.log(jsonStr);
 				res.end(jsonStr);
 				client.end();
 				return;
