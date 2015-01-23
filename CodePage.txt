@@ -136,3 +136,4 @@ pay	9
 909	쿼리 에러: update customer Point
 910	쿼리 에러: insert customer point check
 911	없는 사용자거나 디비 무결성 파괴됨.
+912	어떤 항목을 포인트로 구매하려 했는데, 포인트가 모자람!ㅋ
