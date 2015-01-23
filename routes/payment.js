@@ -104,18 +104,26 @@ function insertBuyHistory (res, client, truckIdx, customerPhone, menuArr) {
 		queryStr += ", '"+customerPhone+"', '"+menuArr[i]['type']+"'),";
 	}
 	queryStr = queryStr.substring(0, queryStr.length-1);
-
-	client.query(queryStr,
-		function (error, result) {
-			if (error) {
-				res.end('{"code":906}');
-				client.end();
-				return;
-			}
-			updateTruckSum (res, client, truckIdx, customerPhone, menuArr, result.insertId);
-			return;
+	client.beginTransaction(function (err) {
+		if (err) {
+			res.end('{"code":913}');
 		}
-	);
+		client.query(queryStr,
+			function (error, result) {
+				if (error) {
+					client.rollback(function (){
+						res.end('{"code":906}');
+						client.end();
+						return;
+					});
+				}
+				else {
+					updateTruckSum (res, client, truckIdx, customerPhone, menuArr, result.insertId);
+					return;
+				}
+			}
+		);
+	});
 }
 
 function updateTruckSum (res, client, truckIdx, customerPhone, menuArr, g_id) {
@@ -127,12 +135,16 @@ function updateTruckSum (res, client, truckIdx, customerPhone, menuArr, g_id) {
 		[sum, truckIdx],
 		function (error, result) {
 			if(error) {
-				res.end('{"code":907}');
-				client.end();
-				return;
+				client.rollback(function () {
+					res.end('{"code":907}');
+					client.end();
+					return;
+				});
 			}
-			insertPointHistory (res, client, truckIdx, customerPhone, menuArr, g_id);
-			return;
+			else {
+				insertPointHistory (res, client, truckIdx, customerPhone, menuArr, g_id);
+				return;	
+			}
 		}
 	);
 }
@@ -172,12 +184,16 @@ function insertPointHistory (res, client, truckIdx, customerPhone, menuArr, g_id
 		[customerPhone, g_id, truckIdx, pricePlus, pointPlus],
 		function (error, result) {
 			if(error) {
-				res.end('{"code":908}');
-				client.end();
+				client.rollback(function () {
+					res.end('{"code":908}');
+					client.end();
+					return;
+				});
+			}
+			else {
+				updateCustomerPoint (res, client, pointPlus, priceMinus, customerPhone);
 				return;
 			}
-			updateCustomerPoint (res, client, pointPlus, priceMinus, customerPhone);
-			return;
 		}
 	);
 }
@@ -188,13 +204,28 @@ function updateCustomerPoint (res, client, pointPlus, priceMinus, customerPhone)
 		[pointPlus, priceMinus, customerPhone],
 		function (error, result) {
 			if (error) {
-				res.end('{"code":909}');
-				client.end();
-				return;
+				client.rollback(function() {
+					res.end('{"code":909}');
+					client.end();
+					return;	
+				});
 			}
-			res.end('{"code":900}');
-			client.end();
-			return;
+			else {
+				client.commit(function (commitError) {
+					if (commitError) {
+						client.rollback(function() {
+							res.end('{"code":900}');
+							client.end();
+							return;
+						});
+					}
+					else {
+						res.end('{"code":900}');
+						client.end();
+						return;
+					}
+				});
+			}
 		}
 	);
 }
