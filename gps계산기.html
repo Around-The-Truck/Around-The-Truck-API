@@ -1,0 +1,49 @@
+<!DOCTYPE>
+<html lang='ko'>
+<head>
+	<meta charset='utf-8'>
+	<script>
+		function translateCoordinates(distance, Lat, Lng, angle) {
+			distanceNorth = Math.sin(angle) * distance;
+			distanceEast = Math.cos(angle) * distance;
+			earthRadius = 6371000;
+			newLat = Lat + (distanceNorth / earthRadius) * 180 / Math.PI;
+			newLon = Lng + (distanceEast / (earthRadius * Math.cos(newLat * 180 / Math.PI))) * 180 / Math.PI;
+
+			return [newLat, newLon];
+		}
+		function fetchCoordinates() {
+			var retVal = "";
+
+			for(var i=0 ; i<parseInt(document.getElementById('num').value) ; i++) {
+
+				var newAngle = Math.random() * Math.PI * 2;
+				var newDist = 1500 * Math.random();
+				var latVal = parseFloat(document.getElementById('lat').value);
+				var lngVal = parseFloat(document.getElementById('lng').value);
+
+				var newCoord = translateCoordinates(newDist, latVal, lngVal, newAngle);
+
+				newCoord[0] = Math.floor(newCoord[0] * 10000000) / 10000000;
+				newCoord[1] = Math.floor(newCoord[1] * 10000000) / 10000000;
+
+				//retVal += "<input type='text' value='"+newCoord[0]+"'/>";
+				//retVal += "<input type='text' value='"+newCoord[1]+"'/><br>";
+				retVal += newCoord[0]+", "+newCoord[1]+"<br>";
+
+			}
+			document.getElementById('result').innerHTML = retVal;
+		}
+	</script>
+</head>
+<body>
+<h1>가짜좌표 생성기</h1>
+기준 Latitude <input type='text' id='lat' /><br>
+기준 Longitude <input type='text' id='lng' /><br><br>
+생성할 갯수<input type='text' id='num' /><br>
+<input type='button' value='위치 생성' onclick='fetchCoordinates()'><br>
+<div id='result'>
+</div>
+
+</body>
+</html>
